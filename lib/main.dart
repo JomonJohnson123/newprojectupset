@@ -7,6 +7,7 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(UserdatamodelAdapter());
+  Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(ProfileModelAdapter());
 
   runApp(const MyApp());

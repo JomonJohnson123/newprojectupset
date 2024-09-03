@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:upsets/Screens/addcategory.dart';
+import 'package:upsets/Screens/productsPage.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -73,52 +74,60 @@ class _CategoryPageState extends State<CategoryPage> {
               itemCount: categories.length,
               itemBuilder: (context, index) {
                 final category = categories[index];
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  elevation: 4,
-                  child: Stack(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: category['image'] != null
-                                ? Image.file(
-                                    category['image'],
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'assets/images/default_image.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              category['name'],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        (context),
+                        MaterialPageRoute(
+                            builder: (context) => const Productspage()));
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 4,
+                    child: Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: category['image'] != null
+                                  ? Image.file(
+                                      category['image'],
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/default_image.png',
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Positioned(
-                        bottom: -2,
-                        right: 5,
-                        child: IconButton(
-                          icon: const Icon(Icons.delete_forever,
-                              color: Color.fromARGB(255, 16, 14, 13)),
-                          onPressed: () {
-                            _deleteCategory(index);
-                          },
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                category['name'],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          bottom: -2,
+                          right: 5,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete_forever,
+                                color: Color.fromARGB(255, 16, 14, 13)),
+                            onPressed: () {
+                              _deleteCategory(index);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

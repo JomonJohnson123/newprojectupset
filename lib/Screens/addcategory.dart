@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:upsets/Screens/category.dart';
+
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Utilities/widgets/textform.dart';
 
@@ -124,13 +124,12 @@ class _AddcategoryState extends State<Addcategory> {
                             setState(() {
                               _imagePicked = true;
                             });
-                            // Navigate to the desired page here
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CategoryPage(),
-                              ),
-                            );
+                            Navigator.pop(context, {
+                              'name': _categorycontroller.text,
+                              'description':
+                                  '', // You can add a description field if needed
+                              'image': _image,
+                            });
                           }
                         }
                       },
