@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Utilities/widgets/textform.dart';
 
@@ -21,11 +21,13 @@ class _AddcategoryState extends State<Addcategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 234, 183, 183),
-        title: const Text('Add Category'),
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(
+          backgroundColor: const Color(0xFFE6B0AA),
+          context: context,
+          title: 'Products',
+          onBackPressed: () {
+            Navigator.pop(context);
+          }),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -113,34 +115,28 @@ class _AddcategoryState extends State<Addcategory> {
                                 backgroundColor: Colors.red,
                                 content: Text(
                                   'Please select an image',
-                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             );
-                            setState(() {
-                              _imagePicked = false;
-                            });
-                          } else {
-                            setState(() {
-                              _imagePicked = true;
-                            });
-                            Navigator.pop(context, {
-                              'name': _categorycontroller.text,
-                              'description':
-                                  '', // You can add a description field if needed
-                              'image': _image,
-                            });
+                            return;
                           }
+
+                          Navigator.pop(context, {
+                            'name': _categorycontroller.text,
+                            'image': _image,
+                          });
                         }
                       },
                       child: const Text(
-                        'Add Category',
+                        'Submit',
                         style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 9, 9, 9),
+                            fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),
-                  kheight70,
+                  kheight60,
                 ],
               ),
             ),
@@ -151,14 +147,18 @@ class _AddcategoryState extends State<Addcategory> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image == null) return;
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    final imageTemporary = File(image.path);
-
-    setState(() {
-      _image = imageTemporary;
-      _imagePicked = true;
-    });
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+        _imagePicked = true;
+      });
+    } else {
+      setState(() {
+        _imagePicked = false;
+      });
+    }
   }
 }

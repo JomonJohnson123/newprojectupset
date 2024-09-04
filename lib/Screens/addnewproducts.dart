@@ -14,6 +14,7 @@ class _AddNewProductsPageState extends State<AddNewProductsPage> {
     return Scaffold(
       appBar: CustomAppBar(
           context: context,
+          backgroundColor: Colors.white,
           title: 'Add New Products',
           onBackPressed: () {
             Navigator.pop(context);

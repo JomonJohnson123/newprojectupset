@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:upsets/Screens/addcategory.dart';
 import 'package:upsets/Screens/productsPage.dart';
+import 'package:upsets/db/functions/dbFunctions.dart';
+import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
@@ -11,21 +13,50 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
-  List<Map<String, dynamic>> categories = [];
+  List<CategoryModel> categories = [];
+  List<CategoryModel> filteredCategories = [];
+  final CategoryService _categoryService = CategoryService();
+  final TextEditingController _searchController = TextEditingController();
+  String searchQuery = '';
 
-  void _addCategory(String name, String description, File? image) {
+  @override
+  void initState() {
+    super.initState();
+    _initializeCategories();
+    _searchController.addListener(_filterCategories);
+  }
+
+  Future<void> _initializeCategories() async {
+    await _categoryService.initHive();
     setState(() {
-      categories.insert(0, {
-        'name': name,
-        'description': description,
-        'image': image,
-      });
+      categories = _categoryService.getCategories();
+      filteredCategories = categories; // Initialize filteredCategories
     });
   }
 
-  void _deleteCategory(int index) {
+  void _filterCategories() {
     setState(() {
-      categories.removeAt(index);
+      searchQuery = _searchController.text.toLowerCase();
+      filteredCategories = categories
+          .where((category) =>
+              category.categoryname.toLowerCase().contains(searchQuery))
+          .toList();
+    });
+  }
+
+  void _addCategory(String name, File image) async {
+    await _categoryService.addCategory(name, image);
+    setState(() {
+      categories = _categoryService.getCategories();
+      _filterCategories(); // Update the filtered list
+    });
+  }
+
+  void _deleteCategory(int index) async {
+    await _categoryService.deleteCategory(index);
+    setState(() {
+      categories = _categoryService.getCategories();
+      _filterCategories(); // Update the filtered list
     });
   }
 
@@ -50,15 +81,14 @@ class _CategoryPageState extends State<CategoryPage> {
               height: 50,
               width: double.infinity,
               child: TextField(
-                decoration: InputDecoration(
+                controller: _searchController,
+                decoration: const InputDecoration(
                   hintText: 'Search ...',
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                  ),
+                      borderRadius: BorderRadius.all(
+                    Radius.circular(10.0),
+                  )),
                 ),
               ),
             ),
@@ -71,15 +101,17 @@ class _CategoryPageState extends State<CategoryPage> {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
-              itemCount: categories.length,
+              itemCount: filteredCategories.length,
               itemBuilder: (context, index) {
-                final category = categories[index];
+                final category = filteredCategories[index];
                 return InkWell(
                   onTap: () {
                     Navigator.push(
-                        (context),
-                        MaterialPageRoute(
-                            builder: (context) => const Productspage()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Productspage(),
+                      ),
+                    );
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -92,9 +124,9 @@ class _CategoryPageState extends State<CategoryPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              child: category['image'] != null
+                              child: category.ctgimage.isNotEmpty
                                   ? Image.file(
-                                      category['image'],
+                                      File(category.ctgimage),
                                       fit: BoxFit.cover,
                                     )
                                   : Image.asset(
@@ -105,7 +137,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                category['name'],
+                                category.categoryname,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -148,7 +180,6 @@ class _CategoryPageState extends State<CategoryPage> {
             final Map<String, dynamic> newCategory = result;
             _addCategory(
               newCategory['name'],
-              newCategory['description'],
               newCategory['image'],
             );
           }

@@ -10,6 +10,8 @@ void main() async {
   Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(ProfileModelAdapter());
 
+  await Hive.openBox<Userdatamodel>('create_account');
+
   runApp(const MyApp());
 }
 

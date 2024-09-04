@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upsets/Screens/addnewproducts.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
 
 class Productspage extends StatefulWidget {
   const Productspage({super.key});
@@ -12,10 +13,13 @@ class _ProductspageState extends State<Productspage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(
+          context: context,
+          backgroundColor: Colors.white,
+          title: 'Products',
+          onBackPressed: () {
+            Navigator.pop(context);
+          }),
       body: Column(
         children: [
           Padding(
