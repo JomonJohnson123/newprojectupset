@@ -9,6 +9,7 @@ void main() async {
   Hive.registerAdapter(UserdatamodelAdapter());
   Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(ProfileModelAdapter());
+  Hive.registerAdapter(ProductModelAdapter());
 
   await Hive.openBox<Userdatamodel>('create_account');
 

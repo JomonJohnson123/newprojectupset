@@ -24,7 +24,7 @@ class _AddcategoryState extends State<Addcategory> {
       appBar: CustomAppBar(
           backgroundColor: const Color(0xFFE6B0AA),
           context: context,
-          title: 'Products',
+          title: 'Add New Category',
           onBackPressed: () {
             Navigator.pop(context);
           }),

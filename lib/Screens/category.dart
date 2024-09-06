@@ -98,6 +98,7 @@ class _CategoryPageState extends State<CategoryPage> {
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
+                childAspectRatio: 3 / 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
@@ -109,7 +110,7 @@ class _CategoryPageState extends State<CategoryPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Productspage(),
+                        builder: (context) => const ProductsPage(),
                       ),
                     );
                   },

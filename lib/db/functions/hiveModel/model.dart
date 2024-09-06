@@ -63,3 +63,33 @@ class CategoryModel {
     required this.ctgimage,
   });
 }
+
+@HiveType(typeId: 4)
+class ProductModel {
+  @HiveField(0)
+  int? id;
+
+  @HiveField(1)
+  String productname;
+
+  @HiveField(2)
+  String productimage;
+
+  @HiveField(3)
+  String productQuantity;
+
+  @HiveField(4)
+  String productPrice;
+
+  @HiveField(5)
+  String productDescription;
+
+  ProductModel({
+    this.id,
+    required this.productname,
+    required this.productimage,
+    required this.productQuantity,
+    required this.productPrice,
+    required this.productDescription,
+  });
+}
