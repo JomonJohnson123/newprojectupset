@@ -95,9 +95,7 @@ class _ProductspageState extends State<ProductsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const Productview(
-                                productid: 'id', // Pass the product details
-                              ),
+                              builder: (context) => const ProductView(),
                             ),
                           );
                         },
@@ -161,6 +159,7 @@ class _ProductspageState extends State<ProductsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 134, 153, 160),
         onPressed: () {
           Navigator.push(
             context,
@@ -169,7 +168,7 @@ class _ProductspageState extends State<ProductsPage> {
             ),
           ).then((_) => _loadProducts());
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Color.fromARGB(255, 7, 6, 6)),
       ),
     );
   }
