@@ -1,191 +1,222 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:upsets/Screens/addcategory.dart';
+import 'package:hive/hive.dart';
+import 'package:upsets/Screens/editcategory.dart';
 import 'package:upsets/Screens/productsPage.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-class CategoryPage extends StatefulWidget {
-  const CategoryPage({super.key});
+class MyCategories extends StatefulWidget {
+  const MyCategories({Key? key}) : super(key: key);
 
   @override
-  State<CategoryPage> createState() => _CategoryPageState();
+  State<MyCategories> createState() => _MyCategoriesState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
-  List<CategoryModel> categories = [];
-  List<CategoryModel> filteredCategories = [];
-  final CategoryService _categoryService = CategoryService();
-  final TextEditingController _searchController = TextEditingController();
-  String searchQuery = '';
+class _MyCategoriesState extends State<MyCategories> {
+  TextEditingController searchController = TextEditingController();
+  ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 
   @override
   void initState() {
     super.initState();
-    _initializeCategories();
-    _searchController.addListener(_filterCategories);
+    loadCategories(); // Load categories into the ValueNotifier
   }
 
-  Future<void> _initializeCategories() async {
-    await _categoryService.initHive();
-    setState(() {
-      categories = _categoryService.getCategories();
-      filteredCategories = categories; // Initialize filteredCategories
-    });
+  Future<void> loadCategories() async {
+    final categories = await getAllCategories();
+    categoryListNotifier.value = categories;
   }
 
-  void _filterCategories() {
-    setState(() {
-      searchQuery = _searchController.text.toLowerCase();
-      filteredCategories = categories
-          .where((category) =>
-              category.categoryname.toLowerCase().contains(searchQuery))
-          .toList();
-    });
+  Future<List<Categorymodel>> getAllCategories() async {
+    final categoriesBox = await Hive.openBox<Categorymodel>('categories');
+    final categories = categoriesBox.values.toList();
+    return categories;
   }
 
-  void _addCategory(String name, File image) async {
-    await _categoryService.addCategory(name, image);
-    setState(() {
-      categories = _categoryService.getCategories();
-      _filterCategories(); // Update the filtered list
-    });
-  }
-
-  void _deleteCategory(int index) async {
-    await _categoryService.deleteCategory(index);
-    setState(() {
-      categories = _categoryService.getCategories();
-      _filterCategories(); // Update the filtered list
-    });
+  List<Categorymodel> filteredCategories(
+      List<Categorymodel> categoryList, String query) {
+    return categoryList
+        .where((category) =>
+            category.categoryname.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
-          'Product Category',
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w500,
-          ),
+          'Categories',
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: SizedBox(
+              width: 370,
               height: 50,
-              width: double.infinity,
-              child: TextField(
-                controller: _searchController,
+              child: TextFormField(
+                controller: searchController,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'No result found';
+                  }
+                  return null;
+                },
                 decoration: const InputDecoration(
-                  hintText: 'Search ...',
+                  labelText: 'Search',
+                  border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                    Radius.circular(10.0),
-                  )),
                 ),
+                onChanged: (value) {
+                  setState(() {}); // This will trigger a rebuild
+                },
               ),
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: filteredCategories.length,
-              itemBuilder: (context, index) {
-                final category = filteredCategories[index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProductsPage(),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 4,
-                    child: Stack(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: category.ctgimage.isNotEmpty
-                                  ? Image.file(
-                                      File(category.ctgimage),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      'assets/images/default_image.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                category.categoryname,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
+            child: ValueListenableBuilder(
+              valueListenable: categoryListNotifier,
+              builder: (BuildContext context, List<Categorymodel> categoryList,
+                  Widget? child) {
+                List<Categorymodel> displayedCategories =
+                    filteredCategories(categoryList, searchController.text);
+                if (displayedCategories.isEmpty) {
+                  return const Center(
+                    child: Text('No results found'),
+                  );
+                }
+                return CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.all(8),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 0.75,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final category = displayedCategories[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => Myproduct(
+                                          productListNotifier:
+                                              productListNotifier,
+                                          data: category,
+                                        )));
+                              },
+                              child: Column(
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Image.file(
+                                        File(category.imagepath),
+                                        width: 180,
+                                        height: 200,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Positioned(
+                                        bottom: 8,
+                                        right: 0,
+                                        child: PopupMenuButton<String>(
+                                          onSelected: (value) {
+                                            if (value == 'edit') {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Myeditctgry(
+                                                    category: category,
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (value == 'delete') {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        "Delete Category"),
+                                                    content: const Text(
+                                                        "Are you sure you want to delete?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text(
+                                                            'Cancel'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          if (category.id !=
+                                                              null) {
+                                                            await deletectgrs(
+                                                                category.id!);
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            loadCategories(); // Reload categories after deletion
+                                                          } else {
+                                                            print(
+                                                                'Category ID is null');
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            "Delete"),
+                                                      )
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            }
+                                          },
+                                          itemBuilder: (BuildContext context) {
+                                            return {'edit', 'delete'}
+                                                .map((String choice) {
+                                              return PopupMenuItem<String>(
+                                                value: choice,
+                                                child: Text(choice),
+                                              );
+                                            }).toList();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    category.categoryname,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
+                          childCount: displayedCategories.length,
                         ),
-                        Positioned(
-                          bottom: -2,
-                          right: 5,
-                          child: IconButton(
-                            icon: const Icon(Icons.delete_forever,
-                                color: Color.fromARGB(255, 16, 14, 13)),
-                            onPressed: () {
-                              _deleteCategory(index);
-                            },
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 );
               },
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Addcategory(),
-            ),
-          );
-
-          if (result != null) {
-            final Map<String, dynamic> newCategory = result;
-            _addCategory(
-              newCategory['name'],
-              newCategory['image'],
-            );
-          }
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

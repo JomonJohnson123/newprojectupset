@@ -92,33 +92,33 @@ class ProfileModelAdapter extends TypeAdapter<ProfileModel> {
           typeId == other.typeId;
 }
 
-class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
+class CategorymodelAdapter extends TypeAdapter<Categorymodel> {
   @override
-  final int typeId = 3;
+  final int typeId = 2;
 
   @override
-  CategoryModel read(BinaryReader reader) {
+  Categorymodel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CategoryModel(
+    return Categorymodel(
+      imagepath: fields[1] as String,
       id: fields[0] as int?,
-      categoryname: fields[1] as String,
-      ctgimage: fields[2] as String,
+      categoryname: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, CategoryModel obj) {
+  void write(BinaryWriter writer, Categorymodel obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.categoryname)
+      ..write(obj.imagepath)
       ..writeByte(2)
-      ..write(obj.ctgimage);
+      ..write(obj.categoryname);
   }
 
   @override
@@ -127,47 +127,53 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CategoryModelAdapter &&
+      other is CategorymodelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
 
-class ProductModelAdapter extends TypeAdapter<ProductModel> {
+class ProductmodelAdapter extends TypeAdapter<Productmodel> {
   @override
-  final int typeId = 4;
+  final int typeId = 3;
 
   @override
-  ProductModel read(BinaryReader reader) {
+  Productmodel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ProductModel(
+    return Productmodel(
       id: fields[0] as int?,
-      productname: fields[1] as String,
-      productimage: fields[2] as String,
-      productQuantity: fields[3] as String,
-      productPrice: fields[4] as String,
-      productDescription: fields[5] as String,
+      image: fields[1] as String?,
+      productname: fields[2] as String?,
+      categoryname: fields[3] as String?,
+      description: fields[4] as String?,
+      sellingrate: fields[5] as int?,
+      purchaserate: fields[6] as int?,
+      stock: fields[7] as int?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ProductModel obj) {
+  void write(BinaryWriter writer, Productmodel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.productname)
+      ..write(obj.image)
       ..writeByte(2)
-      ..write(obj.productimage)
+      ..write(obj.productname)
       ..writeByte(3)
-      ..write(obj.productQuantity)
+      ..write(obj.categoryname)
       ..writeByte(4)
-      ..write(obj.productPrice)
+      ..write(obj.description)
       ..writeByte(5)
-      ..write(obj.productDescription);
+      ..write(obj.sellingrate)
+      ..writeByte(6)
+      ..write(obj.purchaserate)
+      ..writeByte(7)
+      ..write(obj.stock);
   }
 
   @override
@@ -176,7 +182,7 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ProductModelAdapter &&
+      other is ProductmodelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

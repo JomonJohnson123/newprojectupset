@@ -1,225 +1,235 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:upsets/Utilities/widgets/appbars.dart';
-import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Utilities/widgets/textform.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-class AddNewProductsPage extends StatefulWidget {
-  const AddNewProductsPage({super.key});
+class Addproduct extends StatefulWidget {
+  final String categoryname;
+
+  const Addproduct({Key? key, required this.categoryname}) : super(key: key);
 
   @override
-  State<AddNewProductsPage> createState() => _AddNewProductsPageState();
+  State<Addproduct> createState() => _AddproductState();
 }
 
-class _AddNewProductsPageState extends State<AddNewProductsPage> {
-  final ProductService _productService = ProductService();
-  final GlobalKey<FormState> _prdctkey = GlobalKey<FormState>();
-  final TextEditingController prdctnamecontroller = TextEditingController();
-  final TextEditingController prdctpricecontroller = TextEditingController();
-  final TextEditingController prdctquantitycontroller = TextEditingController();
-  final TextEditingController discriptioncontroller = TextEditingController();
-  File? _image;
-  bool _imagePicked = false;
+class Allproduct {
+  static List<Productmodel> product = [];
+}
+
+class _AddproductState extends State<Addproduct> {
+  String? selectedCategory;
+  File? _imagee;
+
+  final TextEditingController productnamecontroller = TextEditingController();
+  final TextEditingController descriptioncontroller = TextEditingController();
+  final TextEditingController sellingratecontroller = TextEditingController();
+  final TextEditingController purchaseratecontroller = TextEditingController();
+  final TextEditingController stockconteroller = TextEditingController();
+
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getallproduct();
+
+    _categories = [];
+    _categories.add(widget.categoryname);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar(
-            context: context,
-            backgroundColor: const Color(0xFFE6B0AA),
-            title: 'Add New Products',
-            onBackPressed: () {
-              Navigator.pop(context);
-            }),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFE6B0AA),
-                Color.fromARGB(255, 130, 200, 122),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: const Text('Add product'),
+        centerTitle: true,
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Form(
+          key: formkey,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              children: [
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: GestureDetector(
+                      onTap: () {
+                        pickimage();
+                      },
+                      child: Container(
+                        child: _imagee != null
+                            ? Image.file(
+                                _imagee!,
+                                width: 300,
+                                height: 170,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                color: Colors.black,
+                                width: 300,
+                                height: 170,
+                                child: const Icon(
+                                  Icons.add_photo_alternate,
+                                  color: Colors.white,
+                                  size: 50,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                BuildTextFormField1(
+                  controller: productnamecontroller,
+                  labelText: 'Product name',
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 60,
+                  width: 340,
+                  child: DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCategory = newValue;
+                      });
+                    },
+                    items: _categories
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Category name',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a category';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                BuildTextFormField1(
+                  controller: descriptioncontroller,
+                  labelText: 'Description',
+                ),
+                const SizedBox(height: 20),
+                BuildTextFormField2(
+                  controller: sellingratecontroller,
+                  labelText: 'Selling rate',
+                ),
+                const SizedBox(height: 20),
+                BuildTextFormField2(
+                  controller: purchaseratecontroller,
+                  labelText: 'Purchase rate',
+                ),
+                const SizedBox(height: 20),
+                BuildTextFormField2(
+                  controller: stockconteroller,
+                  labelText: 'Stock quantity',
+                ),
+                const SizedBox(height: 50),
+                SizedBox(
+                  width: 300,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (formkey.currentState!.validate()) {
+                        if (_imagee != null) {
+                          onsave();
+
+                          Navigator.pop(context);
+                        } else {
+                          return;
+                        }
+                      }
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.all(Colors.black),
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
-          child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _prdctkey,
-                  child: Column(
-                    children: [
-                      InkWell(
-                        onTap: pickPrdctImage,
-                        child: Container(
-                          width: double.infinity,
-                          height: 250,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: _imagePicked
-                                ? DecorationImage(
-                                    image: FileImage(_image!),
-                                    fit: BoxFit.cover,
-                                  )
-                                : const DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/addimage.webp'),
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                      ),
-                      if (!_imagePicked)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8),
-                          child: Text('Please select an image',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 20, 19, 19),
-                                  fontSize: 12.0)),
-                        ),
-                      kheight20,
-                      const Divider(
-                        color: Colors.black,
-                        thickness: 2,
-                      ),
-                      kheight20,
-                      nameInput(
-                        name: 'Product Name',
-                        controller: prdctnamecontroller,
-                        label: 'Product Name',
-                        validator: (context) {
-                          if (prdctnamecontroller.text.isEmpty) {
-                            return 'Please enter a product name';
-                          }
-                          return null;
-                        },
-                        hintText: 'Product Name',
-                      ),
-                      kheight20,
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: qtyinput(
-                                name: 'Quantity',
-                                controller: prdctquantitycontroller,
-                                label: 'Quantity',
-                                validator: (value) {
-                                  if (prdctquantitycontroller.text.isEmpty) {
-                                    return 'Please enter a quantity';
-                                  } else if (int.tryParse(value!) == null) {
-                                    return 'Please enter a valid number';
-                                  }
-                                  return null;
-                                },
-                                hintText: "Quantity",
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            Expanded(
-                              child: priceinput(
-                                name: 'Price',
-                                controller: prdctpricecontroller,
-                                label: 'Price',
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter a price';
-                                  } else if (double.tryParse(value) == null) {
-                                    return 'Please enter a valid price';
-                                  }
-                                  return null;
-                                },
-                                hintText: 'Price',
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            kheight20,
-                          ]),
-                      kheight20,
-                      descriptionField(
-                        name: 'Description',
-                        controller: discriptioncontroller,
-                        label: 'Enter Description',
-                        hintText: 'Enter description ',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a description';
-                          }
-                          return null;
-                        },
-                      ),
-                      kheight20,
-                      SizedBox(
-                        width: 200,
-                        height: 50,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 249, 162, 162),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () {
-                              // Check if the form fields are validated
-                              if (_prdctkey.currentState!.validate()) {
-                                // Check if an image is selected
-                                if (_image == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.red,
-                                      content: Text('Please select an image'),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                _saveProduct();
-                              }
-                            },
-                            child: const Text('Submit',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 39, 37, 37),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ))),
-                      ),
-                      kheight60,
-                    ],
-                  ),
-                ),
-              )),
-        ));
+        ),
+      ),
+    );
   }
 
-  Future<void> _saveProduct() async {
-    ProductModel newProduct = ProductModel(
-      productname: prdctnamecontroller.text,
-      productimage: _image!.path,
-      productQuantity: prdctquantitycontroller.text,
-      productPrice: prdctpricecontroller.text,
-      productDescription: discriptioncontroller.text,
+  Future<void> pickimage() async {
+    // ignore: non_constant_identifier_names
+    final PickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (PickedFile == null) return;
+
+    print('"Image path: ${PickedFile.path}"');
+    setState(() {
+      _imagee = File(PickedFile.path);
+    });
+  }
+
+  //save the added products
+  Future<void> onsave() async {
+    final productName = productnamecontroller.text.trim();
+    final category = widget.categoryname;
+    final description = descriptioncontroller.text.trim();
+    final sellingRate = sellingratecontroller.text.trim();
+    final purchaseRate = purchaseratecontroller.text.trim();
+    final stockquantity = stockconteroller.text.trim();
+
+    if (productName.isEmpty ||
+        category.isEmpty ||
+        description.isEmpty ||
+        sellingRate.isEmpty ||
+        purchaseRate.isEmpty ||
+        productName.isEmpty ||
+        stockquantity.isEmpty) {
+      return;
+    }
+
+    final data = Productmodel(
+      image: _imagee?.path ?? '',
+      productname: productName,
+      categoryname: category,
+      description: description,
+      sellingrate: int.parse(sellingRate),
+      purchaserate: int.parse(purchaseRate),
+      stock: int.parse(stockquantity),
     );
 
-    await _productService.addProduct(newProduct);
-    Navigator.pop(context); // Return to the product list page after saving.
-  }
-
-  Future<void> pickPrdctImage() async {
-    final pickedimage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedimage != null) {
-      setState(() {
-        _image = File(pickedimage.path);
-        _imagePicked = true;
-      });
-    } else {
-      setState(() {
-        _imagePicked = false;
-      });
-    }
+    await addproducts(data, category);
+    print('Product added successfully: $data');
+    setState(() {
+      _imagee = null;
+      productnamecontroller.clear();
+      descriptioncontroller.clear();
+      sellingratecontroller.clear();
+      purchaseratecontroller.clear();
+      stockconteroller.clear();
+    });
   }
 }

@@ -7,9 +7,9 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(UserdatamodelAdapter());
-  Hive.registerAdapter(CategoryModelAdapter());
+  Hive.registerAdapter(CategorymodelAdapter());
   Hive.registerAdapter(ProfileModelAdapter());
-  Hive.registerAdapter(ProductModelAdapter());
+  Hive.registerAdapter(ProductmodelAdapter());
 
   await Hive.openBox<Userdatamodel>('create_account');
 

@@ -1,62 +1,164 @@
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-////////////////CATEGORY HANDLING DATABASE....../////
-class CategoryService {
-  static const String _categoryBoxName = 'categoryBox';
+ValueNotifier<List<Userdatamodel>> userListNotifier = ValueNotifier([]);
+ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
+ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
 
-  Future<void> initHive() async {
-    await Hive.openBox<CategoryModel>(_categoryBoxName);
-  }
+Future<void> editproduct(int id, Productmodel updatedData) async {
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+  final existingData = productBox.get(id);
 
-  Future<void> addCategory(String name, File image) async {
-    final box = Hive.box<CategoryModel>(_categoryBoxName);
-    final category = CategoryModel(
-      categoryname: name,
-      ctgimage: image.path,
-    );
-    await box.add(category);
-  }
+  if (existingData != null) {
+    existingData.productname = updatedData.productname;
+    existingData.description = updatedData.description;
+    existingData.image = updatedData.image;
+    existingData.sellingrate = updatedData.sellingrate;
+    existingData.purchaserate = updatedData.purchaserate;
+    existingData.stock = updatedData.stock;
+    existingData.categoryname = updatedData.categoryname;
 
-  List<CategoryModel> getCategories() {
-    final box = Hive.box<CategoryModel>(_categoryBoxName);
-    return box.values.toList();
-  }
+    // Update the product in the Hive box
+    productBox.put(id, existingData);
 
-  Future<void> deleteCategory(int index) async {
-    final box = Hive.box<CategoryModel>(_categoryBoxName);
-    await box.deleteAt(index);
-  }
-}
-
-////////////////PRODUCT HANDLING DATABASE....../////
-
-class ProductService {
-  final String _boxName = 'productsBox';
-
-  Future<void> addProduct(ProductModel product) async {
-    var box = await Hive.openBox<ProductModel>(_boxName);
-    await box.add(product);
-  }
-
-  Future<List<ProductModel>> getAllProducts() async {
-    var box = await Hive.openBox<ProductModel>(_boxName);
-    return box.values.toList();
-  }
-
-  Future<void> deleteProduct(int index) async {
-    var box = await Hive.openBox<ProductModel>(_boxName);
-    await box.deleteAt(index);
+    // Update the product in the productListNotifier
+    int index = productListNotifier.value.indexWhere((data) => data.id == id);
+    if (index != -1) {
+      productListNotifier.value[index] = existingData;
+      productListNotifier.notifyListeners();
+    }
   }
 }
 
-class ProductSearchService {
-  List<ProductModel> searchProducts(
-      String searchText, List<ProductModel> products) {
-    searchText = searchText.toLowerCase();
-    return products.where((product) {
-      return product.productname.toLowerCase().contains(searchText);
-    }).toList();
+Future<void> deleteproduct(int id) async {
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+  await productBox.delete(id);
+  await getallproduct();
+  await productBox.close();
+}
+
+class IDGenerator2 {
+  static const String _counterBoxKey = 'counterBoxkey2';
+  static late Box<int> _counterBox;
+  static int _counter = 0;
+
+  static Future<void> initialize() async {
+    _counterBox = await Hive.openBox<int>(_counterBoxKey);
+    _counter = _counterBox.get('counter') ?? 0;
   }
+
+  static int generateUniqueID() {
+    final generatedID = _counter++;
+    _counterBox.put('counter', _counter);
+    return generatedID;
+  }
+}
+
+Future<void> addproducts(Productmodel value, String categoryid) async {
+  await IDGenerator2.initialize();
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+  int id = IDGenerator2.generateUniqueID();
+  value.id = id;
+  value.categoryname = categoryid;
+  final addedid = productBox.add(value);
+  print('generated id: $id');
+
+  // ignore: unnecessary_null_comparison
+  if (addedid != null) {
+    productListNotifier.value = [...productListNotifier.value, value];
+    productListNotifier.notifyListeners();
+  }
+}
+
+Future<void> getAllCategories() async {
+  try {
+    final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+    categoryListNotifier.value.clear();
+    categoryListNotifier.value.addAll(categoryDB.values);
+    categoryDB.close();
+
+    categoryListNotifier.notifyListeners();
+  } catch (error) {
+    print('Error retrieving categories: $error');
+  }
+}
+
+Future<void> getallproduct() async {
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+  final categoryList = List<Productmodel>.from(productBox.values);
+  productListNotifier.value = [...categoryList];
+  productListNotifier.notifyListeners();
+}
+
+class IDGenerator {
+  static const String _counterBoxKey = 'counterBoxKey';
+  static late Box<int> _counterBox;
+
+  static int _counter = 0;
+
+  static Future<void> initialize() async {
+    _counterBox = await Hive.openBox<int>(_counterBoxKey);
+    _counter = _counterBox.get('counter') ?? 0;
+  }
+
+  static int generateUniqueID() {
+    final generatedID = _counter++;
+    _counterBox.put('counter', _counter);
+    return generatedID;
+  }
+}
+
+Future<void> updatectgrs(int id, Categorymodel updatedCategory) async {
+  try {
+    final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+
+    // Check if the category with the given id exists
+    if (categoryDB.containsKey(id)) {
+      await categoryDB.put(id, updatedCategory); // Update the category
+      int index =
+          categoryListNotifier.value.indexWhere((data) => data.id == id);
+      if (index != -1) {
+        categoryListNotifier.value[index] =
+            updatedCategory; // Update the category in the notifier list
+        // Notify listeners of the change
+      }
+      categoryListNotifier.notifyListeners();
+    } else {
+      print('Category with id $id does not exist');
+    }
+  } catch (error) {
+    // ignore: avoid_print
+    print('Error updating category: $error');
+  }
+}
+
+Future<void> addCategory(Categorymodel value) async {
+  try {
+    await IDGenerator.initialize();
+    final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+
+    // Assign unique id to the Categorymodel object
+    value.id = IDGenerator.generateUniqueID();
+
+    await categoryDB.put(
+        value.id, value); // Add the Categorymodel object to the database
+    categoryListNotifier.value
+        .add(value); // Add the Categorymodel object to the notifier list
+
+    categoryDB.close();
+    categoryListNotifier.notifyListeners(); // Notify listeners of the change
+  } catch (error) {
+    print('Error adding category: $error');
+  }
+}
+
+Future<void> deletectgrs(int id) async {
+  IDGenerator.initialize();
+  final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+
+  // Check if the category with the given id exists
+  await categoryDB.delete(id); // Delete the category with the given id
+  await getAllCategories(); // Refresh category list
+  categoryDB.close();
 }

@@ -1,175 +1,238 @@
+// ignore_for_file: file_names
+
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:upsets/Screens/addnewproducts.dart';
 import 'package:upsets/Screens/productview.dart';
-import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
+
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-class ProductsPage extends StatefulWidget {
-  const ProductsPage({super.key});
+import 'editproducts.dart';
+
+class Myproduct extends StatefulWidget {
+  final ValueNotifier<List<Productmodel>> productListNotifier;
+  final Categorymodel data;
+
+  const Myproduct(
+      {required this.productListNotifier, Key? key, required this.data})
+      : super(key: key);
 
   @override
-  State<ProductsPage> createState() => _ProductspageState();
+  State<Myproduct> createState() => _MyproductState();
 }
 
-class _ProductspageState extends State<ProductsPage> {
-  final ProductService _productService = ProductService();
-  final ProductSearchService _searchService = ProductSearchService();
-  List<ProductModel> _products = [];
-  List<ProductModel> _filteredProducts = [];
-  final TextEditingController _searchController = TextEditingController();
+class _MyproductState extends State<Myproduct> {
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadProducts();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadProducts() async {
-    var products = await _productService.getAllProducts();
-    setState(() {
-      _products = products;
-      _filteredProducts = products;
-    });
-  }
-
-  void _onSearchChanged() {
-    String searchText = _searchController.text;
-    setState(() {
-      _filteredProducts = _searchService.searchProducts(searchText, _products);
-    });
+    getProductsByCategory(widget.data.categoryname);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        context: context,
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        title: 'Products',
-        onBackPressed: () {
-          Navigator.pop(context);
-        },
+        centerTitle: true,
+        title: Text(
+          widget.data.categoryname,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search products',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _filteredProducts.isEmpty
-                ? const Center(child: Text('No products available'))
-                : GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 3 / 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 50,
+                  width: 375,
+                  child: TextField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      labelText: 'Search by product name',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
                     ),
-                    itemCount: _filteredProducts.length,
-                    itemBuilder: (context, index) {
-                      final product = _filteredProducts[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProductView(),
-                            ),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                    onChanged: (value) {
+                      // Calling a method to update the product list based on the search query
+                      updateProductList(value);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: ValueListenableBuilder<List<Productmodel>>(
+                valueListenable: widget.productListNotifier,
+                builder: (BuildContext context, List<Productmodel>? productList,
+                    Widget? child) {
+                  if (productList?.isEmpty ?? true) {
+                    return const Center(
+                      child: Text('No products found'),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemCount: productList?.length ?? 0,
+                      itemBuilder: (BuildContext context, int index) {
+                        Allproduct.product.add(productList![index]);
+                        return GridTile(
+                          footer: GridTileBar(
+                            backgroundColor: Colors.black45,
+                            title: Text(productList[index].productname!),
+                            subtitle: Text(
+                                '₹ ${productList[index].sellingrate ?? ''}'),
                           ),
-                          elevation: 9,
                           child: Stack(
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    child: product.productimage.isNotEmpty
-                                        ? Image.file(
-                                            File(product.productimage),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.asset(
-                                            'assets/images/default_image.png',
-                                            fit: BoxFit.contain,
-                                          ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          product.productname,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Productdetail(
+                                          data: productList[index]);
+                                    },
+                                  );
+                                },
+                                child: Image.file(
+                                  File(productList[index].image ?? ''),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                               Positioned(
-                                bottom: -2,
-                                right: 5,
-                                child: IconButton(
-                                  icon: const Icon(Icons.delete_forever,
-                                      color: Color.fromARGB(255, 16, 14, 13)),
-                                  onPressed: () {
-                                    _productService.deleteProduct(index);
-                                    _loadProducts();
+                                top: 0,
+                                right: 0,
+                                child: PopupMenuButton<String>(
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Myeditproducts(
+                                                    categoryid: widget
+                                                        .data.categoryname,
+                                                    data: productList[index])),
+                                      );
+                                    } else if (value == 'delete') {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Delete Product'),
+                                            content: const Text(
+                                                'Are you sure you want to delete this product?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  deleteproduct(
+                                                      productList[index].id ??
+                                                          0);
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('Delete'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) {
+                                    return {'edit', 'delete'}
+                                        .map((String choice) {
+                                      return PopupMenuItem<String>(
+                                        value: choice,
+                                        child: Text(choice),
+                                      );
+                                    }).toList();
                                   },
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 134, 153, 160),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddNewProductsPage(),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ).then((_) => _loadProducts());
-        },
-        child: const Icon(Icons.add, color: Color.fromARGB(255, 7, 6, 6)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Addproduct(
+                              categoryname: widget.data.categoryname,
+                            )));
+                  },
+                  shape: const CircleBorder(),
+                  child: const Icon(
+                    Icons.add,
+                    size: 40,
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  // Fetch products by category ID
+  Future<void> getProductsByCategory(String categoryname) async {
+    List<Productmodel> products = await fetchProductsByCategory(categoryname);
+    widget.productListNotifier.value = products;
+  }
+
+  Future<List<Productmodel>> fetchProductsByCategory(
+      String categoryname) async {
+    final productBox = await Hive.openBox<Productmodel>('product_db');
+    final productList = productBox.values
+        .where((product) => product.categoryname == categoryname)
+        .toList();
+    // ignore: avoid_print
+    print(
+        'Fetched products for category: $categoryname'); // Add this line for debugging
+    return productList;
+  }
+
+  // Update product list based on search query
+  void updateProductList(String query) {
+    if (query.isEmpty) {
+      getProductsByCategory(widget.data.categoryname);
+    } else {
+      final List<Productmodel> filteredList = widget.productListNotifier.value
+          .where((product) =>
+              product.productname!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+      widget.productListNotifier.value = filteredList;
+    }
   }
 }

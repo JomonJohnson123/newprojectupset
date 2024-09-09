@@ -46,50 +46,54 @@ class ProfileModel {
   });
 }
 
-@HiveType(typeId: 3)
-class CategoryModel {
+@HiveType(typeId: 2)
+class Categorymodel {
   @HiveField(0)
   int? id;
 
   @HiveField(1)
+  String imagepath;
+
+  @HiveField(2)
   String categoryname;
 
-  @HiveField(2)
-  String ctgimage;
-
-  CategoryModel({
-    this.id,
-    required this.categoryname,
-    required this.ctgimage,
-  });
+  Categorymodel({required this.imagepath, this.id, required this.categoryname});
 }
 
-@HiveType(typeId: 4)
-class ProductModel {
+@HiveType(typeId: 3)
+class Productmodel {
   @HiveField(0)
   int? id;
 
   @HiveField(1)
-  String productname;
+  String? image;
 
   @HiveField(2)
-  String productimage;
+  String? productname;
 
   @HiveField(3)
-  String productQuantity;
+  String? categoryname;
 
   @HiveField(4)
-  String productPrice;
+  String? description;
 
   @HiveField(5)
-  String productDescription;
+  int? sellingrate;
 
-  ProductModel({
+  @HiveField(6)
+  int? purchaserate;
+
+  @HiveField(7)
+  int? stock;
+
+  Productmodel({
     this.id,
+    required this.image,
     required this.productname,
-    required this.productimage,
-    required this.productQuantity,
-    required this.productPrice,
-    required this.productDescription,
+    required this.categoryname,
+    required this.description,
+    required this.sellingrate,
+    required this.purchaserate,
+    required this.stock,
   });
 }
