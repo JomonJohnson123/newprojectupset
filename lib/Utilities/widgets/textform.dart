@@ -118,13 +118,15 @@ class BuildTextFormField1 extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final bool isMultiline;
+  final FormFieldValidator<String>? validator;
 
   const BuildTextFormField1({
     required this.controller,
     required this.labelText,
     this.isMultiline = false,
-    Key? key,
-  }) : super(key: key);
+    this.validator,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,9 +152,11 @@ class BuildTextFormField2 extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final bool isMultiline;
+  final FormFieldValidator<String>? validator;
 
   const BuildTextFormField2(
       {super.key,
+      this.validator,
       required this.controller,
       required this.labelText,
       this.isMultiline = false});

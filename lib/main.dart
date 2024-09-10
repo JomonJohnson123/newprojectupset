@@ -3,7 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:upsets/Screens/splash_screen.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-void main() async {
+Future<void> main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(UserdatamodelAdapter());

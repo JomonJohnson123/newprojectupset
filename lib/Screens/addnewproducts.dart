@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/Utilities/widgets/textform.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
@@ -46,10 +47,14 @@ class _AddproductState extends State<Addproduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
+        title: "Add Product",
         backgroundColor: Colors.white,
-        title: const Text('Add product'),
-        centerTitle: true,
+        titleColor: Colors.black,
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
+        context: context,
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -127,21 +132,29 @@ class _AddproductState extends State<Addproduct> {
                 BuildTextFormField1(
                   controller: descriptioncontroller,
                   labelText: 'Description',
+                  validator: (value) =>
+                      value!.isEmpty ? 'please enter description' : null,
                 ),
                 const SizedBox(height: 20),
                 BuildTextFormField2(
                   controller: sellingratecontroller,
                   labelText: 'Selling rate',
+                  validator: (value) =>
+                      value!.isEmpty ? 'please enter selling rate' : null,
                 ),
                 const SizedBox(height: 20),
                 BuildTextFormField2(
                   controller: purchaseratecontroller,
                   labelText: 'Purchase rate',
+                  validator: (value) =>
+                      value!.isEmpty ? 'please enter purchase rate' : null,
                 ),
                 const SizedBox(height: 20),
                 BuildTextFormField2(
                   controller: stockconteroller,
                   labelText: 'Stock quantity',
+                  validator: (value) =>
+                      value!.isEmpty ? 'please enter stock quantity' : null,
                 ),
                 const SizedBox(height: 50),
                 SizedBox(
@@ -153,18 +166,26 @@ class _AddproductState extends State<Addproduct> {
                           onsave();
 
                           Navigator.pop(context);
-                        } else {
+                        }
+                        if (formkey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Color.fromARGB(255, 212, 4, 18),
+                              content: Text('please select image'),
+                            ),
+                          );
                           return;
                         }
                       }
                     },
                     style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
+                      shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      backgroundColor: MaterialStateProperty.all(Colors.black),
+                      backgroundColor: WidgetStateProperty.all(
+                          const Color.fromARGB(240, 215, 5, 5)),
                     ),
                     child: const Text(
                       'Save',

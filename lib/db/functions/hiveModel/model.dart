@@ -46,7 +46,7 @@ class ProfileModel {
   });
 }
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 3)
 class Categorymodel {
   @HiveField(0)
   int? id;
@@ -60,7 +60,7 @@ class Categorymodel {
   Categorymodel({required this.imagepath, this.id, required this.categoryname});
 }
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 4)
 class Productmodel {
   @HiveField(0)
   int? id;

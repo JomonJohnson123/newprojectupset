@@ -1,16 +1,15 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class Myeditctgry extends StatefulWidget {
   final Categorymodel category;
 
-  const Myeditctgry({required this.category, Key? key}) : super(key: key);
+  const Myeditctgry({required this.category, super.key});
 
   @override
   State<Myeditctgry> createState() => _MyeditctgryState();
@@ -30,9 +29,14 @@ class _MyeditctgryState extends State<Myeditctgry> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Edit category'),
+        appBar: CustomAppBar(
+          title: "EditCategory",
           backgroundColor: Colors.white,
+          titleColor: Colors.black,
+          onBackPressed: () {
+            Navigator.pop(context);
+          },
+          context: context,
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(

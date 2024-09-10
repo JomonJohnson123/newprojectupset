@@ -1,37 +1,26 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:upsets/Screens/addcategory.dart';
 import 'package:upsets/Screens/editcategory.dart';
 import 'package:upsets/Screens/productsPage.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
-class MyCategories extends StatefulWidget {
-  const MyCategories({Key? key}) : super(key: key);
+class CategoriesPage extends StatefulWidget {
+  const CategoriesPage({super.key});
 
   @override
-  State<MyCategories> createState() => _MyCategoriesState();
+  State<CategoriesPage> createState() => CategoriesPageState();
 }
 
-class _MyCategoriesState extends State<MyCategories> {
+class CategoriesPageState extends State<CategoriesPage> {
   TextEditingController searchController = TextEditingController();
-  ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 
   @override
   void initState() {
     super.initState();
-    loadCategories(); // Load categories into the ValueNotifier
-  }
-
-  Future<void> loadCategories() async {
-    final categories = await getAllCategories();
-    categoryListNotifier.value = categories;
-  }
-
-  Future<List<Categorymodel>> getAllCategories() async {
-    final categoriesBox = await Hive.openBox<Categorymodel>('categories');
-    final categories = categoriesBox.values.toList();
-    return categories;
+    getAllCategories();
   }
 
   List<Categorymodel> filteredCategories(
@@ -46,7 +35,7 @@ class _MyCategoriesState extends State<MyCategories> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 249, 249, 249),
         title: const Text(
           'Categories',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
@@ -65,7 +54,7 @@ class _MyCategoriesState extends State<MyCategories> {
                 controller: searchController,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'No result found';
+                    return 'no result found';
                   }
                   return null;
                 },
@@ -75,7 +64,7 @@ class _MyCategoriesState extends State<MyCategories> {
                   prefixIcon: Icon(Icons.search),
                 ),
                 onChanged: (value) {
-                  setState(() {}); // This will trigger a rebuild
+                  setState(() {});
                 },
               ),
             ),
@@ -149,7 +138,7 @@ class _MyCategoriesState extends State<MyCategories> {
                                                     title: const Text(
                                                         "Delete Category"),
                                                     content: const Text(
-                                                        "Are you sure you want to delete?"),
+                                                        "Are you sure want to delete"),
                                                     actions: <Widget>[
                                                       TextButton(
                                                         onPressed: () {
@@ -168,7 +157,6 @@ class _MyCategoriesState extends State<MyCategories> {
                                                             Navigator.of(
                                                                     context)
                                                                 .pop();
-                                                            loadCategories(); // Reload categories after deletion
                                                           } else {
                                                             print(
                                                                 'Category ID is null');
@@ -217,6 +205,15 @@ class _MyCategoriesState extends State<MyCategories> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const MyAddnewcatgrs()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

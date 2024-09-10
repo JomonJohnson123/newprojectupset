@@ -14,7 +14,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
   int _currentSelectedIndex = 0;
   final List<Widget> _pages = [
     const ExplorePage(),
-    const MyCategories(),
+    const CategoriesPage(),
     const ProfilePage(),
   ];
 

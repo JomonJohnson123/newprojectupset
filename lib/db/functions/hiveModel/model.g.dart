@@ -94,7 +94,7 @@ class ProfileModelAdapter extends TypeAdapter<ProfileModel> {
 
 class CategorymodelAdapter extends TypeAdapter<Categorymodel> {
   @override
-  final int typeId = 2;
+  final int typeId = 3;
 
   @override
   Categorymodel read(BinaryReader reader) {
@@ -134,7 +134,7 @@ class CategorymodelAdapter extends TypeAdapter<Categorymodel> {
 
 class ProductmodelAdapter extends TypeAdapter<Productmodel> {
   @override
-  final int typeId = 3;
+  final int typeId = 4;
 
   @override
   Productmodel read(BinaryReader reader) {

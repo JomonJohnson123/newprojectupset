@@ -3,14 +3,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:upsets/db/functions/dbFunctions.dart';
 
+import 'package:image_picker/image_picker.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
+import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class MyAddnewcatgrs extends StatefulWidget {
-  final ValueNotifier<List<Categorymodel>> categoryListNotifier;
-  const MyAddnewcatgrs({required this.categoryListNotifier, super.key});
+  const MyAddnewcatgrs({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<MyAddnewcatgrs> createState() => _MyAddnewcatgrsState();
@@ -23,22 +25,19 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
+        title: "Add Categories",
         backgroundColor: Colors.white,
+        titleColor: Colors.black,
+        onBackPressed: () {
+          Navigator.pop(context);
+        },
+        context: context,
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Add Categories",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
             const SizedBox(height: 20),
             GestureDetector(
               onTap: _getImage,
