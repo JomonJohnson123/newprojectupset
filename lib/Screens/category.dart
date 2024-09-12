@@ -207,7 +207,7 @@ class CategoriesPageState extends State<CategoriesPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: const Color.fromARGB(255, 225, 229, 234),
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const MyAddnewcatgrs()),

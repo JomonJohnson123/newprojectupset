@@ -49,151 +49,185 @@ class _AddproductState extends State<Addproduct> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Add Product",
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFE6B0AA),
         titleColor: Colors.black,
         onBackPressed: () {
           Navigator.pop(context);
         },
         context: context,
       ),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Form(
-          key: formkey,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: GestureDetector(
-                      onTap: () {
-                        pickimage();
-                      },
-                      child: Container(
-                        child: _imagee != null
-                            ? Image.file(
-                                _imagee!,
-                                width: 300,
-                                height: 170,
-                                fit: BoxFit.cover,
-                              )
-                            : Container(
-                                color: Colors.black,
-                                width: 300,
-                                height: 170,
-                                child: const Icon(
-                                  Icons.add_photo_alternate,
-                                  color: Colors.white,
-                                  size: 50,
+      backgroundColor: const Color(0xFFE6B0AA),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE6B0AA),
+              Color.fromARGB(255, 130, 200, 122),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: formkey,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: GestureDetector(
+                        onTap: () {
+                          pickimage();
+                        },
+                        child: Container(
+                          child: _imagee != null
+                              ? Image.file(
+                                  _imagee!,
+                                  width: 300,
+                                  height: 170,
+                                  fit: BoxFit.cover,
+                                )
+                              : Container(
+                                  color: Colors.black,
+                                  width: 300,
+                                  height: 170,
+                                  child: const Icon(
+                                    Icons.add_photo_alternate,
+                                    color: Colors.white,
+                                    size: 50,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                BuildTextFormField1(
-                  controller: productnamecontroller,
-                  labelText: 'Product name',
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 60,
-                  width: 340,
-                  child: DropdownButtonFormField<String>(
-                    value: selectedCategory,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCategory = newValue;
-                      });
-                    },
-                    items: _categories
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Category name',
-                    ),
+                  const SizedBox(height: 20),
+                  BuildTextFormField1(
+                    controller: productnamecontroller,
+                    labelText: 'Product name',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please select a category';
+                        return 'Please enter product name';
                       }
                       return null;
                     },
                   ),
-                ),
-                const SizedBox(height: 20),
-                BuildTextFormField1(
-                  controller: descriptioncontroller,
-                  labelText: 'Description',
-                  validator: (value) =>
-                      value!.isEmpty ? 'please enter description' : null,
-                ),
-                const SizedBox(height: 20),
-                BuildTextFormField2(
-                  controller: sellingratecontroller,
-                  labelText: 'Selling rate',
-                  validator: (value) =>
-                      value!.isEmpty ? 'please enter selling rate' : null,
-                ),
-                const SizedBox(height: 20),
-                BuildTextFormField2(
-                  controller: purchaseratecontroller,
-                  labelText: 'Purchase rate',
-                  validator: (value) =>
-                      value!.isEmpty ? 'please enter purchase rate' : null,
-                ),
-                const SizedBox(height: 20),
-                BuildTextFormField2(
-                  controller: stockconteroller,
-                  labelText: 'Stock quantity',
-                  validator: (value) =>
-                      value!.isEmpty ? 'please enter stock quantity' : null,
-                ),
-                const SizedBox(height: 50),
-                SizedBox(
-                  width: 300,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (formkey.currentState!.validate()) {
-                        if (_imagee != null) {
-                          onsave();
-
-                          Navigator.pop(context);
-                        }
-                        if (formkey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Color.fromARGB(255, 212, 4, 18),
-                              content: Text('please select image'),
-                            ),
-                          );
-                          return;
-                        }
-                      }
-                    },
-                    style: ButtonStyle(
-                      shape: WidgetStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 60,
+                    width: 340,
+                    child: DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCategory = newValue;
+                        });
+                      },
+                      items: _categories
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Category name',
                       ),
-                      backgroundColor: WidgetStateProperty.all(
-                          const Color.fromARGB(240, 215, 5, 5)),
-                    ),
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a category';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(height: 20),
+                  BuildTextFormField1(
+                    controller: descriptioncontroller,
+                    labelText: 'Description',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter description';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  BuildTextFormField2(
+                    controller: sellingratecontroller,
+                    labelText: 'Selling rate',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter selling rate';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  BuildTextFormField2(
+                    controller: purchaseratecontroller,
+                    labelText: 'Purchase rate',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return ' Please enter purchase rate';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  BuildTextFormField2(
+                    controller: stockconteroller,
+                    labelText: 'Stock quantity',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return ' Please enter stock quantity';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 50),
+                  SizedBox(
+                    width: 300,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (formkey.currentState!.validate()) {
+                          if (_imagee != null) {
+                            onsave();
+
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text('Please select an image'),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        backgroundColor: WidgetStateProperty.all(
+                            const Color.fromARGB(239, 241, 133, 123)),
+                      ),
+                      child: const Text(
+                        'Save',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 40, 35, 35)),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
