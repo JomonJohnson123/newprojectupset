@@ -97,3 +97,37 @@ class Productmodel {
     required this.stock,
   });
 }
+
+@HiveType(typeId: 5)
+class SellProduct {
+  @HiveField(0)
+  int? id;
+
+  @HiveField(1)
+  final String sellName;
+
+  @HiveField(2)
+  final String sellPhone;
+
+  @HiveField(3)
+  final String sellproductname;
+
+  @HiveField(4)
+  final String sellPrice;
+
+  @HiveField(5)
+  final DateTime? sellDate;
+
+  @HiveField(6)
+  final String? sellDiscount;
+
+  SellProduct({
+    this.id,
+    required this.sellName,
+    required this.sellPhone,
+    required this.sellproductname,
+    required this.sellPrice,
+    required this.sellDate,
+    required this.sellDiscount,
+  });
+}

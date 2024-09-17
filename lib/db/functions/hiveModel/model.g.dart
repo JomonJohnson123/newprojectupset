@@ -186,3 +186,55 @@ class ProductmodelAdapter extends TypeAdapter<Productmodel> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class SellProductAdapter extends TypeAdapter<SellProduct> {
+  @override
+  final int typeId = 5;
+
+  @override
+  SellProduct read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return SellProduct(
+      id: fields[0] as int?,
+      sellName: fields[1] as String,
+      sellPhone: fields[2] as String,
+      sellproductname: fields[3] as String,
+      sellPrice: fields[4] as String,
+      sellDate: fields[5] as DateTime?,
+      sellDiscount: fields[6] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, SellProduct obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.sellName)
+      ..writeByte(2)
+      ..write(obj.sellPhone)
+      ..writeByte(3)
+      ..write(obj.sellproductname)
+      ..writeByte(4)
+      ..write(obj.sellPrice)
+      ..writeByte(5)
+      ..write(obj.sellDate)
+      ..writeByte(6)
+      ..write(obj.sellDiscount);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SellProductAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

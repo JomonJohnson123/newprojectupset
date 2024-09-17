@@ -10,6 +10,7 @@ Future<void> main() async {
   Hive.registerAdapter(CategorymodelAdapter());
   Hive.registerAdapter(ProfileModelAdapter());
   Hive.registerAdapter(ProductmodelAdapter());
+  Hive.registerAdapter(SellProductAdapter());
 
   await Hive.openBox<Userdatamodel>('create_account');
 

@@ -146,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SellProduct()));
+                              builder: (context) => const SellProducts()));
                     },
                   ),
                   const ListTile(

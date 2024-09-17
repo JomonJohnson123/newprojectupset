@@ -213,3 +213,29 @@ Future<void> deleteproduct(int id) async {
   await getallproduct();
   await productBox.close();
 }
+
+ValueNotifier<List<SellProduct>> sellListNotifier = ValueNotifier([]);
+
+Future<void> addSellProduct(
+  SellProduct value,
+) async {
+  try {
+    final sellBox = await Hive.openBox<SellProduct>(
+        'sell_products'); // Changed 'students' to 'sell_products'
+    final id = await sellBox.add(value);
+    value.id = id;
+    sellListNotifier.value = sellBox.values.toList();
+    sellListNotifier.notifyListeners();
+    print('Sell product added: $value');
+  } catch (e) {
+    print('Error adding sell product: $e');
+  }
+}
+
+Future<void> getsellproduct() async {
+  final studentBox = await Hive.openBox<SellProduct>('sell_products');
+  sellListNotifier.value.clear();
+  sellListNotifier.value.addAll(studentBox.values);
+  sellListNotifier.notifyListeners();
+  print('Retrieved sell products: ${sellListNotifier.value}');
+}

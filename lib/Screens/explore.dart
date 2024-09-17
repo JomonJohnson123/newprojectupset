@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:upsets/Screens/notification_screen.dart';
 import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
+
 import 'package:upsets/Utilities/widgets/const.dart';
 
 class ExplorePage extends StatelessWidget {
@@ -86,7 +87,9 @@ class ExplorePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SellDetails(),
+                            builder: (context) => const SellDetails(
+                              selectedProducts: [],
+                            ),
                           ),
                         );
                       },
