@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:upsets/Screens/explore.dart';
+
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
