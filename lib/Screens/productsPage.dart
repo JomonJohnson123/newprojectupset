@@ -3,13 +3,11 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart'; 
 import 'package:upsets/Screens/addnewproducts.dart';
 import 'package:upsets/Screens/productview.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
-
 import 'package:upsets/db/functions/hiveModel/model.dart';
-
 import 'editproducts.dart';
 
 class Myproduct extends StatefulWidget {
@@ -17,8 +15,7 @@ class Myproduct extends StatefulWidget {
   final Categorymodel data;
 
   const Myproduct(
-      {required this.productListNotifier, Key? key, required this.data})
-      : super(key: key);
+      {required this.productListNotifier, super.key, required this.data});
 
   @override
   State<Myproduct> createState() => _MyproductState();
