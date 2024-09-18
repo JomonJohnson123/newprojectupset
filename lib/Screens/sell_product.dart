@@ -216,8 +216,8 @@ class _SellProductsState extends State<SellProducts> {
 
                                 setState(() {
                                   totalSoldCount += selectedProducts.length;
-                                  // ignore: avoid_print
-                                  print('Total Sold Count: $totalSoldCount');
+
+                                  // print('Total Sold Count: $totalSoldCount');
                                 });
 
                                 updateTotalSoldCount(selectedProducts.length);
