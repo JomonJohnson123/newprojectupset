@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:upsets/Screens/notification_screen.dart';
 import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
 
@@ -22,22 +21,6 @@ class ExplorePage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsScreen(),
-                ),
-              );
-            },
-            icon: const Icon(
-              Icons.notifications_active_outlined,
-              color: Colors.white,
-            ),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),

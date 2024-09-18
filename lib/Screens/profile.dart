@@ -15,12 +15,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  List<Userdatamodel> userdataList = [];
   File? _image;
 
   @override
   void initState() {
     super.initState();
     loadImage();
+  }
+
+  Future<void> getUserData() async {
+    final box = Hive.box<Userdatamodel>('create_account');
+    setState(() {
+      userdataList = box.values.toList();
+    });
   }
 
   Future<void> loadImage() async {
@@ -104,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Jomon',
+                      'Name:',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
