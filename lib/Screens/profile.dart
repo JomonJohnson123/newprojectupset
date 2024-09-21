@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:hive/hive.dart';
+import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
+import 'package:upsets/Screens/terms_of_use.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Screens/login_page.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
@@ -15,7 +17,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
   List<Userdatamodel> userdataList = [];
   File? _image;
 
@@ -170,40 +171,35 @@ class _ProfilePageState extends State<ProfilePage> {
                               builder: (context) => const SellProducts()));
                     },
                   ),
-                  const ListTile(
-                    leading: Icon(
+                  ListTile(
+                    leading: const Icon(
                       Icons.policy_outlined,
                       color: Colors.black,
                     ),
-                    title: Text(
+                    title: const Text(
                       'Privacy Policy',
                       style: TextStyle(color: Colors.black),
                     ),
-                    onTap: null,
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicy())),
                   ),
-                  const ListTile(
-                    leading: Icon(
+                  ListTile(
+                    leading: const Icon(
                       Icons.info_outline,
                       color: Colors.black,
                     ),
-                    title: Text(
+                    title: const Text(
                       'Terms of Use',
                       style: TextStyle(color: Colors.black),
                     ),
-                    onTap: null,
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TermsOfUse())),
                   ),
-                  const ListTile(
-                    leading: Icon(
-                      Icons.share,
-                      color: Colors.black,
-                    ),
-                    title: Text(
-                      'Share App',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    onTap: null,
-                  ),
-                  kheight40,
+                  kheight100,
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 215, 29, 91),

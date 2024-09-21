@@ -3,12 +3,14 @@ import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
-import 'package:hive/hive.dart'; // Don't forget to import Hive for this part
 
 class ExplorePage extends StatelessWidget {
   const ExplorePage({super.key, this.totalAmount});
 
   final double? totalAmount;
+  void initState() {
+    getTotalProductCount();
+  }
 
   @override
   Widget build(BuildContext context) {
