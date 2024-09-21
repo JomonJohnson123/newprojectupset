@@ -40,7 +40,7 @@ class ExplorePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const OverviewPage(),
+                      builder: (context) => OverviewPage(),
                     ),
                   );
                 },

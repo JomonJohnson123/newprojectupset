@@ -26,6 +26,7 @@ class _SellDetailsState extends State<SellDetails> {
     super.initState();
     getsellproduct();
     getallproduct();
+    calculateTotalPrice();
   }
 
   Future<void> getallproduct() async {
