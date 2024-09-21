@@ -19,7 +19,7 @@ class SellDetails extends StatefulWidget {
 }
 
 class _SellDetailsState extends State<SellDetails> {
-  DateTime? _selectedDate;
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _SellDetailsState extends State<SellDetails> {
             ValueListenableBuilder<List<SellProduct>>(
                 valueListenable: sellListNotifier,
                 builder: (context, sellProducts, child) {
-                  if (_selectedDate != null && sellProducts.isEmpty) {
+                  if (selectedDate != null && sellProducts.isEmpty) {
                     return SizedBox(
                       height: MediaQuery.of(context).size.height,
                       child: const Center(
@@ -85,21 +85,20 @@ class _SellDetailsState extends State<SellDetails> {
                         .sort((a, b) => b.sellDate!.compareTo(a.sellDate!));
 
                     List<SellProduct> displayedSellProducts;
-                    if (_selectedDate != null) {
+                    if (selectedDate != null) {
                       displayedSellProducts = sellProducts
                           .where((sellProduct) =>
                               sellProduct.sellDate != null &&
                               DateFormat('yyyy-MM-dd')
                                       .format(sellProduct.sellDate!) ==
                                   DateFormat('yyyy-MM-dd')
-                                      .format(_selectedDate!))
+                                      .format(selectedDate!))
                           .toList();
                     } else {
                       displayedSellProducts = sellProducts;
                     }
 
-                    if (_selectedDate != null &&
-                        displayedSellProducts.isEmpty) {
+                    if (selectedDate != null && displayedSellProducts.isEmpty) {
                       return SizedBox(
                         height: MediaQuery.of(context).size.height,
                         child: const Center(
@@ -338,7 +337,8 @@ class _SellDetailsState extends State<SellDetails> {
                                             '₹${sellProduct.sellPrice}',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                              color: Color.fromARGB(
+                                                  255, 220, 116, 116),
                                               fontSize: 18,
                                             ),
                                           ),
@@ -355,6 +355,17 @@ class _SellDetailsState extends State<SellDetails> {
                     );
                   }
                 }),
+            Container(
+              color: const Color.fromARGB(255, 19, 18, 18),
+              height: 60,
+              child: Center(
+                  child: Text('Total amount: ₹${calculateTotalPrice()}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ))),
+            )
           ],
         ),
       ),
@@ -368,10 +379,38 @@ class _SellDetailsState extends State<SellDetails> {
       firstDate: DateTime(2015, 8),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null && picked != selectedDate) {
       setState(() {
-        _selectedDate = picked;
+        selectedDate = picked;
       });
     }
+  }
+
+  double calculateTotalPrice() {
+    double totalPrice = 0.0;
+    DateTime? selectedDate;
+
+    // ignore: unnecessary_null_comparison
+    if (selectedDate != null) {
+      for (var sellProduct in sellListNotifier.value) {
+        if (sellProduct.sellDate != null &&
+            DateFormat('yyyy-MM-dd').format(sellProduct.sellDate!) ==
+                DateFormat('yyyy-MM-dd').format(selectedDate)) {
+          double? price = double.tryParse(sellProduct.sellPrice.toString());
+          if (price != null) {
+            totalPrice += price;
+          }
+        }
+      }
+    } else {
+      for (var sellProduct in sellListNotifier.value) {
+        double? price = double.tryParse(sellProduct.sellPrice.toString());
+        if (price != null) {
+          totalPrice += price;
+        }
+      }
+    }
+
+    return totalPrice;
   }
 }

@@ -3,11 +3,39 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 ValueNotifier<List<Userdatamodel>> userListNotifier = ValueNotifier([]);
 ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
+double calculateTotalPrice() {
+  double totalPrice = 0.0;
+  DateTime? selectedDate;
+
+  // ignore: unnecessary_null_comparison
+  if (selectedDate != null) {
+    for (var sellProduct in sellListNotifier.value) {
+      if (sellProduct.sellDate != null &&
+          DateFormat('yyyy-MM-dd').format(sellProduct.sellDate!) ==
+              DateFormat('yyyy-MM-dd').format(selectedDate)) {
+        double? price = double.tryParse(sellProduct.sellPrice.toString());
+        if (price != null) {
+          totalPrice += price;
+        }
+      }
+    }
+  } else {
+    for (var sellProduct in sellListNotifier.value) {
+      double? price = double.tryParse(sellProduct.sellPrice.toString());
+      if (price != null) {
+        totalPrice += price;
+      }
+    }
+  }
+
+  return totalPrice;
+}
 
 Future<void> addproducts(Productmodel value, String categoryid) async {
   await IDGenerator2.initialize();
@@ -23,6 +51,11 @@ Future<void> addproducts(Productmodel value, String categoryid) async {
     productListNotifier.value = [...productListNotifier.value, value];
     productListNotifier.notifyListeners();
   }
+}
+
+Future<int> getTotalProductCount() async {
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+  return productBox.length;
 }
 
 Future<void> getallproduct() async {
@@ -238,4 +271,13 @@ Future<void> getsellproduct() async {
   sellListNotifier.value.addAll(studentBox.values);
   sellListNotifier.notifyListeners();
   print('Retrieved sell products: ${sellListNotifier.value}');
+}
+
+double calculateTotalAmount(List<SellProduct> sellProducts) {
+  double totalAmount = 0.0;
+  for (var sellProduct in sellProducts) {
+    // Safely convert the sellPrice to double in case it's stored as a String
+    totalAmount += double.tryParse(sellProduct.sellPrice.toString()) ?? 0.0;
+  }
+  return totalAmount;
 }

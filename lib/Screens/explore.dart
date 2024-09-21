@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
-
 import 'package:upsets/Utilities/widgets/const.dart';
+import 'package:upsets/db/functions/dbFunctions.dart';
+import 'package:hive/hive.dart'; // Don't forget to import Hive for this part
 
 class ExplorePage extends StatelessWidget {
-  const ExplorePage({super.key});
+  const ExplorePage({super.key, this.totalAmount});
+
+  final double? totalAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,7 @@ class ExplorePage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(
           children: [
+            // Overview Card
             SizedBox(
               width: double.infinity,
               height: 150,
@@ -60,6 +64,8 @@ class ExplorePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Sell Details & Total Products Row
             Row(
               children: [
                 Expanded(
@@ -108,32 +114,54 @@ class ExplorePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+
+                // Displaying Total Products Count with FutureBuilder
+                Expanded(
                   child: SizedBox(
                     height: 150,
                     child: Card(
                       elevation: 5,
                       color: Colors.white,
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.pie_chart_outline,
+                            const Icon(
+                              Icons.sell_outlined,
                               size: 40,
                               color: Color(0xFF12927D),
                             ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Total products',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            const SizedBox(height: 10),
+                            FutureBuilder<int>(
+                              future: getTotalProductCount(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return const Text(
+                                    'Error',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                      'Products ${snapshot.data}',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -144,6 +172,8 @@ class ExplorePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
+
+            // Profit Container
             Container(
               height: 150,
               decoration: BoxDecoration(
@@ -159,10 +189,10 @@ class ExplorePage extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(16.8),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       'Profit',
                       style: TextStyle(
@@ -171,14 +201,14 @@ class ExplorePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Divider(
+                  const Divider(
                     color: Colors.black,
                     thickness: 1,
                   ),
                   kheight10,
                   Text(
-                    'Today\'s profit: 10%',
-                    style: TextStyle(
+                    'Today\'s profit:   ${calculateTotalPrice()}',
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),

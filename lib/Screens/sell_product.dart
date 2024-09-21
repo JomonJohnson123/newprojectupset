@@ -62,7 +62,7 @@ class _SellProductsState extends State<SellProducts> {
     );
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 227, 202, 202),
+      backgroundColor: const Color(0xFFE6B0AA),
       appBar: AppBar(
         backgroundColor: const Color(0xFFE6B0AA),
         leading: IconButton(
@@ -86,184 +86,187 @@ class _SellProductsState extends State<SellProducts> {
         ),
         centerTitle: true,
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-              Color(0xFFE6B0AA),
-              Color.fromARGB(255, 130, 200, 122),
-            ])),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _sellName,
-                        decoration: InputDecoration(
-                          hintText: 'Name',
-                          labelText: 'Name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                Color(0xFFE6B0AA),
+                Color.fromARGB(255, 130, 200, 122),
+              ])),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: _sellName,
+                          decoration: InputDecoration(
+                            hintText: 'Name',
+                            labelText: 'Name',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _sellPhone,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Phone Number',
-                          labelText: 'Phone Number',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your phone number';
-                          } else if (value.length != 10) {
-                            return 'Please enter a valid 10-digit phone number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        maxLines: null,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: InputDecoration(
-                          labelText: 'Choose Product',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              _navigateAndDisplaySelection(context);
-                            },
-                            icon: const Icon(Icons.arrow_drop_down),
-                          ),
-                        ),
-                        readOnly: true,
-                        controller: _sellchair,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please choose a product';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      TextFormField(
-                        readOnly: true,
-                        controller: _sellPrice,
-                        decoration: InputDecoration(
-                          labelText: 'Price',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a price';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                        width: 300,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                final newSellproduct = SellProduct(
-                                  sellName: _sellName.text,
-                                  sellPhone: _sellPhone.text,
-                                  sellproductname: selectedProducts
-                                      .map((e) => e.productname)
-                                      .join(', '),
-                                  sellPrice: totalPrice.toString(),
-                                  sellDate: DateTime?.now(),
-                                  sellDiscount: _selldiscount.text,
-                                );
-
-                                for (var product in selectedProducts) {
-                                  if (product.stock != null &&
-                                      product.stock! > 0) {
-                                    product.stock = product.stock! - 1;
-                                    await updateProduct(product);
-                                  }
-                                }
-
-                                await addSellProduct(newSellproduct);
-
-                                setState(() {
-                                  totalSoldCount += selectedProducts.length;
-
-                                  // print('Total Sold Count: $totalSoldCount');
-                                });
-
-                                updateTotalSoldCount(selectedProducts.length);
-                                // ignore: use_build_context_synchronously
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => SellDetails(
-                                            selectedProducts:
-                                                selectedProducts)));
-
-                                setState(() {
-                                  _sellName.clear();
-                                  _sellPhone.clear();
-                                  _sellchair.clear();
-                                  _sellPrice.clear();
-                                  _selldiscount.clear();
-                                });
-                              } catch (e) {
-                                // ignore: avoid_print
-                                print('An error occurred: $e');
-                              }
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your name';
                             }
+                            return null;
                           },
-                          child: const Text(
-                            'Sell',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: _sellPhone,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Phone Number',
+                            labelText: 'Phone Number',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all<Color>(
-                                const Color.fromARGB(255, 241, 141, 141)),
-                            shape:
-                                WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            } else if (value.length != 10) {
+                              return 'Please enter a valid 10-digit phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          maxLines: null,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          decoration: InputDecoration(
+                            labelText: 'Choose Product',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                _navigateAndDisplaySelection(context);
+                              },
+                              icon: const Icon(Icons.arrow_drop_down),
+                            ),
+                          ),
+                          readOnly: true,
+                          controller: _sellchair,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please choose a product';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        TextFormField(
+                          readOnly: true,
+                          controller: _sellPrice,
+                          decoration: InputDecoration(
+                            labelText: 'Price',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a price';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: 300,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                try {
+                                  final newSellproduct = SellProduct(
+                                    sellName: _sellName.text,
+                                    sellPhone: _sellPhone.text,
+                                    sellproductname: selectedProducts
+                                        .map((e) => e.productname)
+                                        .join(', '),
+                                    sellPrice: totalPrice.toString(),
+                                    sellDate: DateTime?.now(),
+                                    sellDiscount: _selldiscount.text,
+                                  );
+
+                                  for (var product in selectedProducts) {
+                                    if (product.stock != null &&
+                                        product.stock! > 0) {
+                                      product.stock = product.stock! - 1;
+                                      await updateProduct(product);
+                                    }
+                                  }
+
+                                  await addSellProduct(newSellproduct);
+
+                                  setState(() {
+                                    totalSoldCount += selectedProducts.length;
+
+                                    // print('Total Sold Count: $totalSoldCount');
+                                  });
+
+                                  updateTotalSoldCount(selectedProducts.length);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => SellDetails(
+                                              selectedProducts:
+                                                  selectedProducts)));
+
+                                  setState(() {
+                                    _sellName.clear();
+                                    _sellPhone.clear();
+                                    _sellchair.clear();
+                                    _sellPrice.clear();
+                                    _selldiscount.clear();
+                                  });
+                                } catch (e) {
+                                  // ignore: avoid_print
+                                  print('An error occurred: $e');
+                                }
+                              }
+                            },
+                            child: const Text(
+                              'Sell',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 241, 141, 141)),
+                              shape: WidgetStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -492,6 +495,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+                      Navigator.pop(context);
                       setState(() {
                         selectedCounts =
                             List.generate(allProducts.length, (_) => 0);

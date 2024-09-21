@@ -15,6 +15,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  
   List<Userdatamodel> userdataList = [];
   File? _image;
 
@@ -108,31 +109,43 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 kwidth60,
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Name:',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person_2_outlined,
+                            size: 25.0,
+                            color: Color.fromARGB(255, 42, 39, 39),
+                          ),
+                          SizedBox(width: 8.0),
+                          Text(
+                            'Jomon',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 48, 43, 43),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 4.0),
-                    Text(
-                      'jomonjohnson@gmail.com',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w400,
+                      SizedBox(height: 4.0),
+                      Text(
+                        'jomonjohnson@gmail.com',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color.fromARGB(179, 31, 26, 26),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 10.0),
+            kheight10,
             Divider(
               color: Colors.white.withOpacity(0.5),
               thickness: 1.0,
