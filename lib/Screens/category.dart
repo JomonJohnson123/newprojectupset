@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:upsets/Screens/addcategory.dart';
 import 'package:upsets/Screens/editcategory.dart';
@@ -20,7 +19,7 @@ class CategoriesPageState extends State<CategoriesPage> {
   @override
   void initState() {
     super.initState();
-    getAllCategories();
+    getAllCategories(); // Ensure categories are loaded when the page is initialized
   }
 
   List<Categorymodel> filteredCategories(
@@ -64,7 +63,7 @@ class CategoriesPageState extends State<CategoriesPage> {
                   prefixIcon: Icon(Icons.search),
                 ),
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {}); // Rebuild UI when search query changes
                 },
               ),
             ),

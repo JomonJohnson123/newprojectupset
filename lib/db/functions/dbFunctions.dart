@@ -115,46 +115,27 @@ Future<void> getAll() async {
 }
 
 // Category functions
-Future<void> addCategory(Categorymodel value) async {
-  try {
-    await IDGenerator.initialize();
-    final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+Future<void> addCategory(Categorymodel category) async {
+  final categoryBox = await Hive.openBox<Categorymodel>('categories');
+  await categoryBox.add(category);
 
-    // Assign unique id to the Categorymodel object
-    value.id = IDGenerator.generateUniqueID();
-
-    await categoryDB.put(
-        value.id, value); // Add the Categorymodel object to the database
-    categoryListNotifier.value
-        .add(value); // Add the Categorymodel object to the notifier list
-
-    categoryDB.close();
-    categoryListNotifier.notifyListeners(); // Notify listeners of the change
-  } catch (error) {
-    print('Error adding category: $error');
-  }
+  // Notify listeners to update the UI
+  categoryListNotifier.value = categoryBox.values.toList();
+  categoryListNotifier.notifyListeners();
 }
 
 Future<void> getAllCategories() async {
-  try {
-    final categoryDB = await Hive.openBox<Categorymodel>('category_db');
-    categoryListNotifier.value.clear();
-    categoryListNotifier.value.addAll(categoryDB.values);
-    categoryDB.close();
-    categoryListNotifier.notifyListeners();
-  } catch (error) {
-    print('Error retrieving categories: $error');
-  }
+  final categoryBox = await Hive.openBox<Categorymodel>('categories');
+  categoryListNotifier.value = categoryBox.values.toList();
 }
 
-Future<void> deletectgrs(int id) async {
-  IDGenerator.initialize();
-  final categoryDB = await Hive.openBox<Categorymodel>('category_db');
+Future<void> deletectgrs(int categoryId) async {
+  final categoryBox = await Hive.openBox<Categorymodel>('categories');
+  await categoryBox.delete(categoryId);
 
-  // Check if the category with the given id exists
-  await categoryDB.delete(id); // Delete the category with the given id
-  await getAllCategories(); // Refresh category list
-  categoryDB.close();
+  // Update and notify listeners
+  categoryListNotifier.value = categoryBox.values.toList();
+  categoryListNotifier.notifyListeners();
 }
 
 Future<void> updatectgrs(int id, Categorymodel updatedCategory) async {

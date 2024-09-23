@@ -1,10 +1,8 @@
-// ignore_for_file: file_names, avoid_unnecessary_containers
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upsets/Utilities/widgets/appbars.dart';
-import 'package:upsets/Utilities/widgets/const.dart';
+
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
@@ -125,19 +123,16 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
                                   const Color.fromARGB(255, 240, 156, 156),
                             ),
                             child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 3, 2, 2)),
+                              'Add',
+                              style: TextStyle(color: Colors.black),
                             ),
-                          ),
-                          kheight100,
-                          kheight100
+                          )
                         ],
                       ),
-                    ),
+                    )
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -145,32 +140,29 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
     );
   }
 
-  Future<void> _getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
   Future<void> _savecategory() async {
-    final name = _nameController.text;
+    final categoryName = _nameController.text.trim();
     final image = _image?.path;
 
-    if (image != null && name.isNotEmpty) {
-      final category = Categorymodel(imagepath: image, categoryname: name);
-      await addCategory(category); // Corrected function call
+    if (categoryName.isEmpty || image == null) {
+      return;
+    }
 
+    final category = Categorymodel(
+      categoryname: categoryName,
+      imagepath: image,
+    );
+    await addCategory(category); // Call the function to add a category
+  }
+
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
       setState(() {
-        _image = null;
-        _nameController.clear();
+        _image = File(pickedImage.path);
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Category added successfully')),
-      );
     }
   }
 }

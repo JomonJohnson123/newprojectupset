@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
-import 'package:upsets/Screens/terms_of_use.dart';
+
+import 'package:upsets/Screens/termsofuse.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Screens/login_page.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
@@ -183,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const PrivacyPolicy())),
+                            builder: (context) => const Privacypolicy())),
                   ),
                   ListTile(
                     leading: const Icon(
@@ -197,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TermsOfUse())),
+                            builder: (context) => const TermsOfUseScreen())),
                   ),
                   kheight100,
                   ElevatedButton(
