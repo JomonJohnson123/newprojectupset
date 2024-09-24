@@ -30,6 +30,7 @@ class OverviewPage extends StatelessWidget {
         title: 'Overview',
         onBackPressed: () => Navigator.pop(context),
         context: context,
+        iconColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 70.0),

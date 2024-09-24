@@ -31,6 +31,7 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
           Navigator.pop(context);
         },
         context: context,
+        iconColor: Colors.black,
       ),
       backgroundColor: Colors.white,
       body: Container(

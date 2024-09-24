@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:upsets/Screens/notification.dart';
 import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 
@@ -18,17 +20,17 @@ class ExplorePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF12927D),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF12927D),
-        title: const Text(
-          'Explore',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      appBar: CustomAppBarHome(
+          title: 'Explore',
+          backgroundColor: const Color(0xFF12927D),
+          onNotificationPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationPage(),
+              ),
+            );
+          }),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(

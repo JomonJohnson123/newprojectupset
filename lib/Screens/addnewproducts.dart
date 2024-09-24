@@ -55,6 +55,7 @@ class _AddproductState extends State<Addproduct> {
           Navigator.pop(context);
         },
         context: context,
+        iconColor: Colors.black,
       ),
       backgroundColor: const Color(0xFFE6B0AA),
       body: Container(

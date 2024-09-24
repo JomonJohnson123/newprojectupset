@@ -37,6 +37,7 @@ class _MyeditctgryState extends State<Myeditctgry> {
             Navigator.pop(context);
           },
           context: context,
+          iconColor: Colors.black,
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(

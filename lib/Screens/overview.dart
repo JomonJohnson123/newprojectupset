@@ -54,6 +54,7 @@ class _OverviewPageState extends State<OverviewPage> {
         title: 'Overview',
         onBackPressed: () => Navigator.pop(context),
         context: context,
+        iconColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
