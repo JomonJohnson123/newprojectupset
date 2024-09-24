@@ -218,8 +218,6 @@ class _SellProductsState extends State<SellProducts> {
 
                                   setState(() {
                                     totalSoldCount += selectedProducts.length;
-
-                                    // print('Total Sold Count: $totalSoldCount');
                                   });
 
                                   updateTotalSoldCount(selectedProducts.length);
@@ -251,9 +249,9 @@ class _SellProductsState extends State<SellProducts> {
                                   fontWeight: FontWeight.bold),
                             ),
                             style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all<Color>(
+                              backgroundColor: MaterialStateProperty.all<Color>(
                                   const Color.fromARGB(255, 241, 141, 141)),
-                              shape: WidgetStateProperty.all<
+                              shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -319,106 +317,58 @@ class _SellProductsState extends State<SellProducts> {
           String productName = entry.key;
           int count = entry.value;
           double productPrice = double.parse(selectedProducts
-                  .firstWhere((product) => product.productname == productName)
+                  .firstWhere((p) => p.productname == productName)
                   .sellingrate
                   .toString()) *
               count;
-          String formattedProduct =
-              '$productName = $count * ${selectedProducts.firstWhere((product) => product.productname == productName).sellingrate} = $productPrice';
-          // ignore: prefer_interpolation_to_compose_strings
-          _sellchair.text += formattedProduct + '\n';
-        }
 
-        _sellPrice.text = totalPrice.toString();
+          _sellPrice.text = totalPrice.toString();
+          _sellchair.text +=
+              '$productName (x$count) - ${productPrice.toStringAsFixed(2)}\n';
+        }
       });
     }
   }
 }
 
-// ignore: use_key_in_widget_constructors
 class ProductSelectionScreen extends StatefulWidget {
+  const ProductSelectionScreen({super.key});
+
   @override
   State<ProductSelectionScreen> createState() => _ProductSelectionScreenState();
-
-  void onUpdateSelectedProducts(List<Productmodel> selectedProducts) {}
-
-  void onUpdateReturnName(param0) {}
-
-  void onUpdateReturnPhone(param0) {}
 }
 
 class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
-  late List<Productmodel> allProducts;
-  late List<Productmodel> displayedProducts = [];
-  late List<int> selectedCounts = [];
+  List<Productmodel> allProducts = [];
+  List<Productmodel> displayedProducts = [];
+  List<int> selectedCounts = [];
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getAllProducts().then((products) {
-      setState(() {
-        allProducts = products;
-
-        displayedProducts =
-            allProducts.where((product) => product.stock! > 0).toList();
-        selectedCounts = List.generate(displayedProducts.length, (_) => 0);
-      });
-    });
+    _fetchProducts();
   }
 
-  Future<List<Productmodel>> getAllProducts() async {
+  Future<void> _fetchProducts() async {
     final addProductBox = await Hive.openBox<Productmodel>('product_db');
-    final allProduct = addProductBox.values.toList();
-    return List<Productmodel>.from(allProduct);
+    setState(() {
+      allProducts = addProductBox.values.toList();
+      displayedProducts = allProducts;
+      selectedCounts = List.generate(displayedProducts.length, (index) => 0);
+    });
   }
 
   void filterProducts(String query) {
-    setState(() {
-      displayedProducts = allProducts
-          .where((product) =>
-              product.productname!.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
+    final filteredProducts = allProducts.where((product) {
+      final productName = product.productname!.toLowerCase();
+      return productName.contains(query.toLowerCase());
+    }).toList();
 
-  void _openCountDialog(BuildContext context, int index) {
-    int count = selectedCounts[index];
-    Productmodel product = displayedProducts[index];
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        int newCount = count;
-        return AlertDialog(
-          backgroundColor: const Color(0xFFF2E8CD),
-          title: const Text('Enter Count'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Available Stock: ${product.stock}'),
-              TextFormField(
-                initialValue: count.toString(),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  newCount = int.tryParse(value) ?? 0;
-                },
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  newCount = newCount.clamp(0, product.stock!);
-                  selectedCounts[index] = newCount;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
+    setState(() {
+      displayedProducts = filteredProducts;
+      selectedCounts = List.generate(displayedProducts.length, (index) => 0);
+    });
   }
 
   @override
@@ -429,7 +379,6 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      // ignore: sized_box_for_whitespace
       child: Container(
         height: MediaQuery.of(context).size.height * 0.58,
         child: Column(
@@ -447,9 +396,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                 onChanged: filterProducts,
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: displayedProducts.length,
@@ -458,11 +405,23 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                   return ListTile(
                     title: GestureDetector(
                       onTap: () {
-                        _openCountDialog(context, index);
+                        // Open count dialog only if in stock
+                        if (product.stock! > 0) {
+                          _openCountDialog(context, index);
+                        }
                       },
-                      child: Text(product.productname!),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(product.productname!),
+                          if (product.stock! <= 0)
+                            const Text(
+                              'Out of Stock',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
                     ),
-                    // subtitle: Text('Available: ${product.producount}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -490,9 +449,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                     },
                     child: const Text('Add'),
                   ),
-                  const SizedBox(
-                    width: 50,
-                  ),
+                  const SizedBox(width: 50),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -509,6 +466,58 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _openCountDialog(BuildContext context, int index) {
+    int count = selectedCounts[index];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title:
+              Text('Select Count for ${displayedProducts[index].productname}'),
+          content: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  if (count > 0) {
+                    setState(() {
+                      count--;
+                      selectedCounts[index] = count;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.remove),
+              ),
+              Text(count.toString()),
+              IconButton(
+                onPressed: () {
+                  if (displayedProducts[index].stock! > count) {
+                    setState(() {
+                      count++;
+                      selectedCounts[index] = count;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  selectedCounts[index] = count;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

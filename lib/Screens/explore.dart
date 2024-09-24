@@ -10,6 +10,8 @@ class ExplorePage extends StatelessWidget {
   final double? totalAmount;
   void initState() {
     getTotalProductCount();
+    calculateTotalPrice();
+    getTotalProductCount();
   }
 
   @override
