@@ -9,6 +9,7 @@ import 'package:upsets/db/functions/hiveModel/model.dart';
 ValueNotifier<List<Userdatamodel>> userListNotifier = ValueNotifier([]);
 ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
+
 double calculateTotalPrice() {
   double totalPrice = 0.0;
   DateTime? selectedDate;

@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart'; 
+import 'package:hive/hive.dart';
 import 'package:upsets/Screens/addnewproducts.dart';
 import 'package:upsets/Screens/productview.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
