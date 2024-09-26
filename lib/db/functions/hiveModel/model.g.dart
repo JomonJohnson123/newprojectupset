@@ -205,13 +205,14 @@ class SellProductAdapter extends TypeAdapter<SellProduct> {
       sellPrice: fields[4] as String,
       sellDate: fields[5] as DateTime?,
       sellDiscount: fields[6] as String?,
+      totalprice: fields[7] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SellProduct obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -225,7 +226,9 @@ class SellProductAdapter extends TypeAdapter<SellProduct> {
       ..writeByte(5)
       ..write(obj.sellDate)
       ..writeByte(6)
-      ..write(obj.sellDiscount);
+      ..write(obj.sellDiscount)
+      ..writeByte(7)
+      ..write(obj.totalprice);
   }
 
   @override

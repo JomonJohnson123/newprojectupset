@@ -204,6 +204,7 @@ class _SellProductsState extends State<SellProducts> {
                                     sellPrice: totalPrice.toString(),
                                     sellDate: DateTime?.now(),
                                     sellDiscount: _selldiscount.text,
+                                    totalprice: null,
                                   );
 
                                   for (var product in selectedProducts) {
@@ -470,7 +471,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
   }
 
   void _openCountDialog(BuildContext context, int index) {
-    int count = selectedCounts[index];
+    int currentCount = selectedCounts[index];
 
     showDialog(
       context: context,
@@ -478,38 +479,46 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
         return AlertDialog(
           title:
               Text('Select Count for ${displayedProducts[index].productname}'),
-          content: Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  if (count > 0) {
-                    setState(() {
-                      count--;
-                      selectedCounts[index] = count;
-                    });
-                  }
-                },
-                icon: const Icon(Icons.remove),
-              ),
-              Text(count.toString()),
-              IconButton(
-                onPressed: () {
-                  if (displayedProducts[index].stock! > count) {
-                    setState(() {
-                      count++;
-                      selectedCounts[index] = count;
-                    });
-                  }
-                },
-                icon: const Icon(Icons.add),
-              ),
-            ],
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      if (currentCount > 0) {
+                        setState(() {
+                          currentCount--;
+                          selectedCounts[index] = currentCount;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.remove),
+                  ),
+                  Text(
+                    currentCount.toString(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (displayedProducts[index].stock! > currentCount) {
+                        setState(() {
+                          currentCount++;
+                          selectedCounts[index] = currentCount;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              );
+            },
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  selectedCounts[index] = count;
+                  selectedCounts[index] = currentCount;
                 });
                 Navigator.pop(context);
               },

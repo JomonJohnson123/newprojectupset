@@ -57,12 +57,18 @@ class ExplorePage extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Center(
-                      child: Text(
-                        'Overview',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Overview',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Icon(Icons.troubleshoot_outlined, size: 40),
+                        ],
                       ),
                     ),
                   ),

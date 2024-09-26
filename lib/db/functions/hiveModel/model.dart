@@ -121,6 +121,9 @@ class SellProduct {
   @HiveField(6)
   final String? sellDiscount;
 
+  @HiveField(7)
+  double? totalprice;
+
   SellProduct({
     this.id,
     required this.sellName,
@@ -129,5 +132,6 @@ class SellProduct {
     required this.sellPrice,
     required this.sellDate,
     required this.sellDiscount,
+    required this.totalprice,
   });
 }

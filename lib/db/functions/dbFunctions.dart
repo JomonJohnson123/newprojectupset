@@ -9,13 +9,21 @@ import 'package:upsets/db/functions/hiveModel/model.dart';
 ValueNotifier<List<Userdatamodel>> userListNotifier = ValueNotifier([]);
 ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
+ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
 
-double calculateTotalPrice() {
+calculateTotalPrice({DateTime? selectedDate}) {
   double totalPrice = 0.0;
-  DateTime? selectedDate;
 
-  // ignore: unnecessary_null_comparison
-  if (selectedDate != null) {
+  // If no date is selected, calculate the total price for all products
+  if (selectedDate == null) {
+    for (var sellProduct in sellListNotifier.value) {
+      double? price = double.tryParse(sellProduct.sellPrice.toString());
+      if (price != null) {
+        totalPrice += price;
+      }
+    }
+  } else {
+    // If a date is selected, calculate the total price for that specific date
     for (var sellProduct in sellListNotifier.value) {
       if (sellProduct.sellDate != null &&
           DateFormat('yyyy-MM-dd').format(sellProduct.sellDate!) ==
@@ -26,16 +34,10 @@ double calculateTotalPrice() {
         }
       }
     }
-  } else {
-    for (var sellProduct in sellListNotifier.value) {
-      double? price = double.tryParse(sellProduct.sellPrice.toString());
-      if (price != null) {
-        totalPrice += price;
-      }
-    }
   }
 
-  return totalPrice;
+  // Update the total price notifier to trigger UI rebuild
+  totalPriceNotifier.value = totalPrice;
 }
 
 Future<void> addproducts(Productmodel value, String categoryid) async {
@@ -263,3 +265,7 @@ double calculateTotalAmount(List<SellProduct> sellProducts) {
   }
   return totalAmount;
 }
+
+
+//selldetails.......
+

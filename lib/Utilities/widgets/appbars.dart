@@ -89,3 +89,51 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
+
+class CustomAppBarSellPage extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String title;
+  final Color? backgroundColor; // Optional parameter for background color
+  final Color? titleColor; // Optional parameter for title text color
+  final Color? iconColor; // Optional parameter for icon color
+  final VoidCallback
+      onNotificationPressed; // Callback for notification button press
+
+  const CustomAppBarSellPage({
+    super.key,
+    required this.title,
+    this.backgroundColor,
+    this.titleColor,
+    this.iconColor,
+    required this.onNotificationPressed,
+    required BuildContext context,
+    required List<IconButton> actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: titleColor ?? Colors.white, // Default title color
+          fontSize: 30,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.calendar_today,
+            color: iconColor ?? Colors.white, // Default icon color
+          ),
+          onPressed: onNotificationPressed,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}

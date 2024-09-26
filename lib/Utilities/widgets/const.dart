@@ -26,3 +26,5 @@ const kheight100 = SizedBox(
 const kwidth100 = SizedBox(
   width: 100,
 );
+
+const kwidth15 = SizedBox(width: 15);
