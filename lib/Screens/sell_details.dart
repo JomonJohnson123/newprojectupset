@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison, invalid_use_of_visible_for_testing_member
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +20,9 @@ class SellDetails extends StatefulWidget {
 class _SellDetailsState extends State<SellDetails> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
+  ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
 
   @override
   void initState() {
@@ -29,14 +30,31 @@ class _SellDetailsState extends State<SellDetails> {
     getsellproduct();
     getallproduct();
     calculateTotalPrice();
+    sellListNotifier.addListener(calculateTotalPrice);
   }
 
   Future<void> getallproduct() async {
     final productBox = await Hive.openBox<Productmodel>('product_db');
     final productList = List<Productmodel>.from(productBox.values);
     productListNotifier.value = productList;
-    // ignore: invalid_use_of_protected_member
+    // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
     productListNotifier.notifyListeners();
+  }
+
+  void calculateTotalPrice() {
+    double total = 0.0;
+    for (var sellProduct in sellListNotifier.value) {
+      // Convert the String sellPrice to a double
+      double? sellPrice = double.tryParse(sellProduct.sellPrice);
+
+      if (sellPrice != null) {
+        total += sellPrice; // Add the price if conversion is successful
+      } else {
+        // Handle the case where the price couldn't be parsed, if necessary
+        print("Error parsing sellPrice: ${sellProduct.sellPrice}");
+      }
+    }
+    totalPriceNotifier.value = total; // Update the total price
   }
 
   @override
@@ -77,6 +95,30 @@ class _SellDetailsState extends State<SellDetails> {
               },
             ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Search by name or amount',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.toLowerCase(); // Update the search query
+                });
+              },
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -84,7 +126,6 @@ class _SellDetailsState extends State<SellDetails> {
             ValueListenableBuilder<List<SellProduct>>(
               valueListenable: sellListNotifier,
               builder: (context, sellProducts, child) {
-                // Filter by selected date range if available
                 List<SellProduct> displayedSellProducts = [];
                 if (selectedStartDate != null && selectedEndDate != null) {
                   displayedSellProducts = sellProducts.where((sellProduct) {
@@ -98,7 +139,16 @@ class _SellDetailsState extends State<SellDetails> {
                   displayedSellProducts = sellProducts;
                 }
 
-                // Sort the sell products by date (most recent first)
+                if (searchQuery.isNotEmpty) {
+                  displayedSellProducts =
+                      displayedSellProducts.where((sellProduct) {
+                    final sellName = sellProduct.sellName.toLowerCase();
+                    final sellAmount = sellProduct.sellPrice.toString();
+                    return sellName.contains(searchQuery) ||
+                        sellAmount.contains(searchQuery);
+                  }).toList();
+                }
+
                 displayedSellProducts
                     .sort((a, b) => b.sellDate!.compareTo(a.sellDate!));
 
@@ -106,9 +156,7 @@ class _SellDetailsState extends State<SellDetails> {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height,
                     child: const Center(
-                      child: Text(
-                        'No sell products available',
-                      ),
+                      child: Text('No sell products available'),
                     ),
                   );
                 }
@@ -154,6 +202,7 @@ class _SellDetailsState extends State<SellDetails> {
                       onDismissed: (direction) {
                         setState(() {
                           sellProducts.remove(sellProduct);
+                          calculateTotalPrice(); // Recalculate total price after deletion
                         });
                       },
                       child: Container(
@@ -276,71 +325,31 @@ class _SellDetailsState extends State<SellDetails> {
                                     if (productCountMap
                                         .containsKey(productName)) {
                                       productCountMap[productName] =
-                                          (productCountMap[productName] ?? 0) +
-                                              1;
+                                          productCountMap[productName]! + 1;
                                     } else {
                                       productCountMap[productName] = 1;
                                     }
                                   }
-                                  List<Widget> productWidgets = [];
-                                  productCountMap
-                                      .forEach((productName, productCount) {
-                                    Productmodel? product;
-                                    for (var element
-                                        in productListNotifier.value) {
-                                      if (element.productname == productName) {
-                                        product = element;
-                                        break;
-                                      }
-                                    }
 
-                                    if (product != null) {
-                                      productWidgets.add(
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '$productName * $productCount = ₹ ${sellProduct.sellPrice}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }
-                                  });
-                                  return productWidgets;
+                                  return productCountMap.entries.map((entry) {
+                                    return Text(
+                                      '${entry.key} x ${entry.value}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  }).toList();
                                 }(),
                               ),
-                              subtitle: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        'Total Price:',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      Text(
-                                        '₹${sellProduct.sellPrice}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              trailing: Text(
+                                '\$${sellProduct.sellPrice}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -354,17 +363,43 @@ class _SellDetailsState extends State<SellDetails> {
           ],
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(10),
+        child: BottomAppBar(
+          color: const Color.fromARGB(255, 55, 53, 53),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: ValueListenableBuilder(
+              valueListenable: totalPriceNotifier,
+              builder: (context, double totalPrice, child) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Total Sale Price:  ${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Future<void> _selectDateRange(BuildContext context) async {
-    final picked = await showDateRangePicker(
+    final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-
-    if (picked != null && picked.start != null && picked.end != null) {
+    if (picked != null) {
       setState(() {
         selectedStartDate = picked.start;
         selectedEndDate = picked.end;

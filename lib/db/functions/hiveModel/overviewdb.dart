@@ -37,6 +37,7 @@ Future<int> getTotalCategoryCount() async {
 int countSalesBills() {
   DateTime? selectedDate;
 
+  // ignore: unnecessary_null_comparison
   if (selectedDate != null) {
     return sellListNotifier.value
         .where((sellProduct) =>

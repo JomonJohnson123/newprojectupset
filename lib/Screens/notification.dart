@@ -25,7 +25,7 @@ class NotificationPage extends StatelessWidget {
               productList.where((product) => product.stock! <= 0).toList();
 
           if (outOfStockProducts.isEmpty) {
-            return Center(child: const Text('No out-of-stock items.'));
+            return const Center(child: Text('No out-of-stock items.'));
           }
 
           return ListView.builder(
@@ -35,7 +35,11 @@ class NotificationPage extends StatelessWidget {
               return ListTile(
                 title: Text('Product: ${product.productname}'),
                 subtitle: Text('Category: ${product.categoryname}'),
-                trailing: Text('Stock: ${product.stock}'),
+                trailing: Text('Stock: ${product.stock}',
+                    style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red)),
               );
             },
           );
