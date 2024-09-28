@@ -364,9 +364,9 @@ class _SellDetailsState extends State<SellDetails> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(9),
         child: BottomAppBar(
-          color: const Color.fromARGB(255, 55, 53, 53),
+          color: const Color.fromARGB(255, 135, 243, 77),
           child: Container(
             padding: const EdgeInsets.all(10),
             child: ValueListenableBuilder(
@@ -378,7 +378,7 @@ class _SellDetailsState extends State<SellDetails> {
                     Text(
                       'Total Sale Price:  ${totalPrice.toStringAsFixed(2)}',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 7, 6, 6),
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),

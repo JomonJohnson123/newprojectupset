@@ -12,7 +12,8 @@ class ExplorePage extends StatelessWidget {
   final double? totalAmount;
   void initState() {
     getTotalProductCount();
-
+    calculateTotalPrice();
+    sellListNotifier.addListener(calculateTotalPrice);
     getTotalProductCount();
   }
 
@@ -218,13 +219,13 @@ class ExplorePage extends StatelessWidget {
                     thickness: 1,
                   ),
                   kheight10,
-                  // Text(
-                  //   'Today\'s profit:   ${calculateTotalPrice()}',
-                  //   style: const TextStyle(
-                  //     fontSize: 18,
-                  //     fontWeight: FontWeight.w500,
-                  //   ),
-                  // ),
+                  Text(
+                    'Today\'s profit:  ${calculateTotalPrice()}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
