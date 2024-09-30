@@ -281,6 +281,14 @@ double calculateTotalAmount(List<SellProduct> sellProducts) {
   return totalAmount;
 }
 
-
 //selldetails.......
-
+class UserDataService {
+  Future<Userdatamodel?> retrieveUserData() async {
+    final box = Hive.box<Userdatamodel>('create_account');
+    if (box.isNotEmpty) {
+      // Assuming you want the first user or modify logic accordingly
+      return box.getAt(1);
+    }
+    return null;
+  }
+}

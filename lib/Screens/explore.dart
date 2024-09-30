@@ -90,7 +90,7 @@ class _ExplorePageState extends State<ExplorePage> {
             ),
           );
         },
-        badgeCount: 2,
+        badgeCount: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),

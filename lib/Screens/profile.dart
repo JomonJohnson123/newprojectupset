@@ -8,6 +8,7 @@ import 'package:upsets/Screens/sell_product.dart';
 import 'package:upsets/Screens/termsofuse.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Screens/login_page.dart';
+import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -20,11 +21,24 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   List<Userdatamodel> userdataList = [];
   File? _image;
+  Userdatamodel? user;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     loadImage();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final userDataService = UserDataService();
+    final retrievedUser = await userDataService.retrieveUserData();
+
+    setState(() {
+      user = retrievedUser;
+      isLoading = false;
+    });
   }
 
   Future<void> getUserData() async {
@@ -111,21 +125,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 kwidth60,
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.person_2_outlined,
                             size: 25.0,
                             color: Color.fromARGB(255, 42, 39, 39),
                           ),
-                          SizedBox(width: 8.0),
+                          const SizedBox(width: 8.0),
                           Text(
-                            'Jomon',
-                            style: TextStyle(
+                            user != null ? '${user!.name}' : 'No Name',
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 48, 43, 43),
@@ -133,13 +147,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4.0),
+                      const SizedBox(height: 4.0),
                       Text(
-                        'jomonjohnson@gmail.com',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color.fromARGB(179, 31, 26, 26),
-                          fontWeight: FontWeight.w400,
+                        user != null ? '${user!.email}' : 'No Email',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 48, 43, 43),
                         ),
                       ),
                     ],
