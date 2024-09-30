@@ -20,16 +20,14 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  // Declare the ValueNotifier at the class level
   final ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
 
-  // Hive box to store the total sale amount
   late Box<double> totalSaleBox;
 
   @override
   void initState() {
     super.initState();
-    // Initialize Hive box for total sale
+    initializeProductCount();
     initializeTotalSaleData();
   }
 
@@ -82,16 +80,18 @@ class _ExplorePageState extends State<ExplorePage> {
     return Scaffold(
       backgroundColor: const Color(0xFF12927D),
       appBar: CustomAppBarHome(
-          title: 'Explore',
-          backgroundColor: const Color(0xFF12927D),
-          onNotificationPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NotificationPage(),
-              ),
-            );
-          }),
+        title: 'Explore',
+        backgroundColor: const Color(0xFF12927D),
+        onNotificationPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NotificationPage(),
+            ),
+          );
+        },
+        badgeCount: 2,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(
@@ -105,7 +105,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => OverviewPage(),
+                      builder: (context) => const OverviewPage(),
                     ),
                   );
                 },
@@ -209,31 +209,18 @@ class _ExplorePageState extends State<ExplorePage> {
                               color: Color(0xFF12927D),
                             ),
                             kheight10,
-                            FutureBuilder<int>(
-                              future: getTotalProductCount(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return const Text(
-                                    'Error',
-                                    style: TextStyle(
+                            ValueListenableBuilder<int>(
+                              valueListenable: productCountNotifier,
+                              builder: (context, productCount, child) {
+                                return Center(
+                                  child: Text(
+                                    'Products $productCount',
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                } else {
-                                  return Center(
-                                    child: Text(
-                                      'Products ${snapshot.data}',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  );
-                                }
+                                  ),
+                                );
                               },
                             ),
                           ],

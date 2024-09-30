@@ -10,6 +10,7 @@ ValueNotifier<List<Userdatamodel>> userListNotifier = ValueNotifier([]);
 ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
 ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
+ValueNotifier<int> productCountNotifier = ValueNotifier(0);
 
 calculateTotalPrice({DateTime? selectedDate}) {
   double totalPrice = 0.0;
@@ -56,6 +57,20 @@ Future<void> addproducts(Productmodel value, String categoryid) async {
   }
 }
 
+Future<void> initializeProductCount() async {
+  final productBox = await Hive.openBox<Productmodel>('product_db');
+
+  // Set the initial product count
+  productCountNotifier.value = productBox.length;
+
+  // Listen for changes in the product box
+  productBox.watch().listen((event) {
+    // Update the product count whenever a change occurs
+    productCountNotifier.value = productBox.length;
+  });
+}
+
+// Function to retrieve the product count synchronously (if needed)
 Future<int> getTotalProductCount() async {
   final productBox = await Hive.openBox<Productmodel>('product_db');
   return productBox.length;

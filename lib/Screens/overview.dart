@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:upsets/Utilities/widgets/appbars.dart';
-import 'package:upsets/db/functions/hiveModel/overviewdb.dart';
+
+import 'package:upsets/db/functions/hiveModel/overviewdb.dart'; // Your model classes
 
 class OverviewPage extends StatefulWidget {
+  const OverviewPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _OverviewPageState createState() => _OverviewPageState();
 }
 
@@ -92,13 +96,15 @@ class _OverviewPageState extends State<OverviewPage> {
                       backgroundColor: categoryColor,
                       radius: 12,
                     ),
-                    title: Text(category,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        )),
+                    title: Text(
+                      category,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     trailing: Text(
-                      '${value.toStringAsFixed(1)}',
+                      '${value.toInt()}',
                       style: const TextStyle(
                         fontSize: 16,
                       ),

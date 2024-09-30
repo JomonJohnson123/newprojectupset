@@ -50,6 +50,7 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor; // Optional parameter for background color
   final Color? titleColor; // Optional parameter for title text color
   final Color? iconColor; // Optional parameter for icon color
+  final int badgeCount; // Count of new notifications
   final VoidCallback
       onNotificationPressed; // Callback for notification button press
 
@@ -59,6 +60,7 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.titleColor,
     this.iconColor,
+    required this.badgeCount,
     required this.onNotificationPressed,
   }) : super(key: key);
 
@@ -75,12 +77,43 @@ class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        IconButton(
-          icon: Icon(
-            Icons.notifications,
-            color: iconColor ?? Colors.white, // Default icon color
-          ),
-          onPressed: onNotificationPressed,
+        Stack(
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.notifications,
+                color: iconColor ?? Colors.white, // Default icon color
+              ),
+              onPressed: onNotificationPressed,
+            ),
+            if (badgeCount > 0) // Show badge only when there is a count
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red, // Badge color
+                    borderRadius: BorderRadius.circular(12), // Circular shape
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 22,
+                    minHeight: 24,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$badgeCount', // Display notification count
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ],
     );
