@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBackPressed;
+
   final Color? backgroundColor; // Optional parameter for background color
   final Color? titleColor; // Optional parameter for title text color
   // Optional parameter for icon color
@@ -35,9 +36,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     255, 18, 16, 16)), // Use the title color if provided
       ),
       centerTitle: true,
-      backgroundColor: backgroundColor ??
-          Theme.of(context)
-              .primaryColor, // Use the background color if provided
+      backgroundColor: Colors.white, // Use the background color if provided
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsets/Utilities/widgets/appbars.dart';
 
 class TermsOfUseScreen extends StatelessWidget {
   final String lastUpdatedDate = "23/09/2024";
@@ -11,21 +12,14 @@ class TermsOfUseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-          title: const Text('Terms of Use'),
-          titleTextStyle: const TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )),
+      appBar: CustomAppBar(
+          title: 'Terms Of Use',
+          onBackPressed: () {
+            Navigator.pop(context);
+          },
+          titleColor: Colors.black,
+          context: context,
+          iconColor: Colors.black),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -35,13 +29,13 @@ class TermsOfUseScreen extends StatelessWidget {
               _buildSectionCard(
                 heading: 'Terms of Use',
                 child: const Text(
-                  'By accessing and using Ergon Miller, you agree to comply with and be bound by the following terms and conditions of use. If you disagree with any part of these terms, please do not use our app.',
+                  'By accessing and using Upsets, you agree to comply with and be bound by the following terms and conditions of use. If you disagree with any part of these terms, please do not use our app.',
                 ),
               ),
               _buildSectionCard(
                 heading: '1. Acceptance of Terms',
                 child: const Text(
-                  'By using Ergon Miller, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use. If you do not agree to these terms, please discontinue use immediately.',
+                  'By using Upsets, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use. If you do not agree to these terms, please discontinue use immediately.',
                 ),
               ),
               _buildSectionCard(
@@ -56,7 +50,7 @@ class TermsOfUseScreen extends StatelessWidget {
                       '2.2. You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account or password.',
                     ),
                     Text(
-                      '2.3. Ergon Miller is designed for managing inventory. Any unauthorized use, reproduction, or distribution of the app\'s content may result in legal action.',
+                      '2.3. Upsets is designed for managing inventory. Any unauthorized use, reproduction, or distribution of the app\'s content may result in legal action.',
                     ),
                   ],
                 ),
@@ -78,25 +72,25 @@ class TermsOfUseScreen extends StatelessWidget {
               _buildSectionCard(
                 heading: '4. Data Privacy',
                 child: const Text(
-                  'Ergon Miller respects your privacy. Please refer to our Privacy Policy for details on how we collect, use, and protect your personal information.',
+                  'Upsets respects your privacy. Please refer to our Privacy Policy for details on how we collect, use, and protect your personal information.',
                 ),
               ),
               _buildSectionCard(
                 heading: '5. Content Ownership',
                 child: const Text(
-                  'All content within the app, including but not limited to text, images, and features, is the property of Ergon Miller or its licensors.',
+                  'All content within the app, including but not limited to text, images, and features, is the property of Upsets or its licensors.',
                 ),
               ),
               _buildSectionCard(
                 heading: '6. Limitation of Liability',
                 child: const Text(
-                  'Ergon Miller shall not be liable for any direct, indirect, incidental, consequential, or exemplary damages resulting from your use of the app.',
+                  'Upsets shall not be liable for any direct, indirect, incidental, consequential, or exemplary damages resulting from your use of the app.',
                 ),
               ),
               _buildSectionCard(
                 heading: '7. Modifications to Terms',
                 child: const Text(
-                  'Ergon Miller reserves the right to modify these Terms of Use at any time. Your continued use of the app following such changes constitutes your acceptance of the revised terms.',
+                  'Upsets reserves the right to modify these Terms of Use at any time. Your continued use of the app following such changes constitutes your acceptance of the revised terms.',
                 ),
               ),
               _buildSectionCard(

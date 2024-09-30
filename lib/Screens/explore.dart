@@ -273,7 +273,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Total Sale Price: $totalPrice',
+                              'Total Sale Price: ₹$totalPrice',
                               style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

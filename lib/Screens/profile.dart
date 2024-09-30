@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:hive/hive.dart';
+import 'package:upsets/Screens/about.dart';
 import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
 
@@ -125,21 +126,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 kwidth60,
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person_2_outlined,
                             size: 25.0,
                             color: Color.fromARGB(255, 42, 39, 39),
                           ),
-                          const SizedBox(width: 8.0),
+                          SizedBox(width: 8.0),
                           Text(
-                            user != null ? '${user!.name}' : 'No Name',
-                            style: const TextStyle(
+                            'Jomon',
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 48, 43, 43),
@@ -147,10 +148,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4.0),
+                      SizedBox(height: 4.0),
                       Text(
-                        user != null ? '${user!.email}' : 'No Email',
-                        style: const TextStyle(
+                        'jomon@gmail.com',
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 48, 43, 43),
@@ -202,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   ListTile(
                     leading: const Icon(
-                      Icons.info_outline,
+                      Icons.handshake_outlined,
                       color: Colors.black,
                     ),
                     title: const Text(
@@ -214,7 +215,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         MaterialPageRoute(
                             builder: (context) => const TermsOfUseScreen())),
                   ),
-                  kheight100,
+                  ListTile(
+                    leading: const Icon(
+                      Icons.info_outline,
+                      color: Colors.black,
+                    ),
+                    title: const Text(
+                      'About Us',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AboutPage())),
+                  ),
+                  kheight50,
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 215, 29, 91),
