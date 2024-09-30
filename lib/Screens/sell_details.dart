@@ -33,6 +33,12 @@ class _SellDetailsState extends State<SellDetails> {
     sellListNotifier.addListener(calculateTotalPrice);
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> getallproduct() async {
     final productBox = await Hive.openBox<Productmodel>('product_db');
     final productList = List<Productmodel>.from(productBox.values);
@@ -44,17 +50,16 @@ class _SellDetailsState extends State<SellDetails> {
   void calculateTotalPrice() {
     double total = 0.0;
     for (var sellProduct in sellListNotifier.value) {
-      // Convert the String sellPrice to a double
       double? sellPrice = double.tryParse(sellProduct.sellPrice);
 
       if (sellPrice != null) {
-        total += sellPrice; // Add the price if conversion is successful
+        total += sellPrice;
       } else {
-        // Handle the case where the price couldn't be parsed, if necessary
+        // ignore: avoid_print
         print("Error parsing sellPrice: ${sellProduct.sellPrice}");
       }
     }
-    totalPriceNotifier.value = total; // Update the total price
+    totalPriceNotifier.value = total;
   }
 
   @override
@@ -104,6 +109,18 @@ class _SellDetailsState extends State<SellDetails> {
               decoration: InputDecoration(
                 hintText: 'Search by name or amount',
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.cancel),
+                        onPressed: () {
+                          setState(() {
+                            searchController.clear();
+                            searchQuery = '';
+                          });
+                          FocusScope.of(context).unfocus();
+                        },
+                      )
+                    : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -113,7 +130,7 @@ class _SellDetailsState extends State<SellDetails> {
               ),
               onChanged: (value) {
                 setState(() {
-                  searchQuery = value.toLowerCase(); // Update the search query
+                  searchQuery = value.toLowerCase();
                 });
               },
             ),
@@ -202,7 +219,7 @@ class _SellDetailsState extends State<SellDetails> {
                       onDismissed: (direction) {
                         setState(() {
                           sellProducts.remove(sellProduct);
-                          calculateTotalPrice(); // Recalculate total price after deletion
+                          calculateTotalPrice();
                         });
                       },
                       child: Container(
@@ -333,7 +350,7 @@ class _SellDetailsState extends State<SellDetails> {
 
                                   return productCountMap.entries.map((entry) {
                                     return Text(
-                                      '${entry.key} x ${entry.value}',
+                                      '${entry.key} x ${entry.value}  ',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18,
@@ -344,11 +361,11 @@ class _SellDetailsState extends State<SellDetails> {
                                 }(),
                               ),
                               trailing: Text(
-                                '\$${sellProduct.sellPrice}',
+                                '₹ ${sellProduct.sellPrice}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: Color.fromARGB(255, 246, 117, 117),
                                 ),
                               ),
                             ),
@@ -363,30 +380,28 @@ class _SellDetailsState extends State<SellDetails> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(9),
+      bottomNavigationBar: SizedBox(
+        height: 60,
         child: BottomAppBar(
-          color: const Color.fromARGB(255, 135, 243, 77),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: ValueListenableBuilder(
-              valueListenable: totalPriceNotifier,
-              builder: (context, double totalPrice, child) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Total Sale Price:  ${totalPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 7, 6, 6),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+          shadowColor: Colors.black12,
+          color: const Color.fromARGB(255, 18, 205, 71),
+          child: ValueListenableBuilder(
+            valueListenable: totalPriceNotifier,
+            builder: (context, double totalPrice, child) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Total Sale Price:  ₹${totalPrice.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:upsets/db/functions/db_explore.dart';
+// Import the new database file
 import 'package:upsets/Screens/notification.dart';
 import 'package:upsets/Screens/overview.dart';
 import 'package:upsets/Screens/sell_details.dart';
@@ -6,15 +9,72 @@ import 'package:upsets/Utilities/widgets/appbars.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 
-class ExplorePage extends StatelessWidget {
+class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key, this.totalAmount});
 
   final double? totalAmount;
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _ExplorePageState createState() => _ExplorePageState();
+}
+
+class _ExplorePageState extends State<ExplorePage> {
+  // Declare the ValueNotifier at the class level
+  final ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
+
+  // Hive box to store the total sale amount
+  late Box<double> totalSaleBox;
+
+  @override
   void initState() {
-    getTotalProductCount();
-    calculateTotalPrice();
+    super.initState();
+    // Initialize Hive box for total sale
+    initializeTotalSaleData();
+  }
+
+  // Method to initialize Hive box and load stored total sale amount
+  Future<void> initializeTotalSaleData() async {
+    totalSaleBox = await openTotalSaleBox();
+    double? storedTotal = await getTotalSaleAmount(totalSaleBox);
+    if (storedTotal != null) {
+      totalPriceNotifier.value = storedTotal;
+    }
+
+    // Add listener to update total sale price
     sellListNotifier.addListener(calculateTotalPrice);
-    getTotalProductCount();
+  }
+
+  @override
+  void dispose() {
+    // Clean up listeners and notifiers when the widget is removed from the tree
+    sellListNotifier.removeListener(calculateTotalPrice);
+    totalPriceNotifier.dispose();
+    super.dispose();
+  }
+
+  // Method to calculate the total price of sold products
+
+  void calculateTotalPrice() {
+    double total = 0.0;
+
+    // Iterate through the sellListNotifier to calculate the total price
+    for (var sellProduct in sellListNotifier.value) {
+      double? sellPrice = double.tryParse(sellProduct.sellPrice);
+
+      if (sellPrice != null) {
+        total += sellPrice;
+      } else {
+        // ignore: avoid_print
+        print("Error parsing sellPrice: ${sellProduct.sellPrice}");
+      }
+    }
+
+    // Update the notifier's value
+    totalPriceNotifier.value = total;
+
+    // Store the total in Hive using the separated function
+    storeTotalSaleAmount(totalSaleBox, total);
   }
 
   @override
@@ -76,7 +136,7 @@ class ExplorePage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            kheight10,
 
             // Sell Details & Total Products Row
             Row(
@@ -111,7 +171,7 @@ class ExplorePage extends StatelessWidget {
                                 size: 40,
                                 color: Color(0xFF12927D),
                               ),
-                              SizedBox(height: 10),
+                              kheight10,
                               Text(
                                 'Sell Details',
                                 style: TextStyle(
@@ -148,7 +208,7 @@ class ExplorePage extends StatelessWidget {
                               size: 40,
                               color: Color(0xFF12927D),
                             ),
-                            const SizedBox(height: 10),
+                            kheight10,
                             FutureBuilder<int>(
                               future: getTotalProductCount(),
                               builder: (context, snapshot) {
@@ -184,7 +244,7 @@ class ExplorePage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            kheight20,
 
             // Profit Container
             Container(
@@ -203,31 +263,40 @@ class ExplorePage extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(16.8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: Text(
-                      'Profit',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Center(
+                      child: Text(
+                        'Profit',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  const Divider(
-                    color: Colors.black,
-                    thickness: 1,
-                  ),
-                  kheight10,
-                  Text(
-                    'Today\'s profit:  ${calculateTotalPrice()}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                    const Divider(
+                      color: Colors.black,
+                      thickness: 1,
                     ),
-                  ),
-                ],
-              ),
+                    kheight10,
+                    ValueListenableBuilder(
+                      valueListenable: totalPriceNotifier,
+                      builder: (context, double totalPrice, child) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Total Sale Price: $totalPrice',
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ]),
             ),
           ],
         ),

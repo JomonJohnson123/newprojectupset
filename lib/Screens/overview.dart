@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:upsets/Utilities/widgets/appbars.dart';
-
 import 'package:upsets/db/functions/hiveModel/overviewdb.dart';
-// Import the file with database functions
 
 class OverviewPage extends StatefulWidget {
   @override
@@ -27,22 +25,26 @@ class _OverviewPageState extends State<OverviewPage> {
   void initState() {
     super.initState();
     _loadData();
+
+    // Listen to changes in notifiers and update the chart
+    totalProductsNotifier.addListener(_updateDataMap);
+    totalSoldProductsNotifier.addListener(_updateDataMap);
+    totalCategoriesNotifier.addListener(_updateDataMap);
+  }
+
+  void _updateDataMap() {
+    setState(() {
+      dataMap = {
+        "Products": totalProductsNotifier.value.toDouble(),
+        "Selled products": totalSoldProductsNotifier.value.toDouble(),
+        "Categories": totalCategoriesNotifier.value.toDouble(),
+      };
+    });
   }
 
   Future<void> _loadData() async {
-    // Fetch data asynchronously
-    final totalProducts = await getTotalProductCount();
-    final totalSoldProducts = countSalesBills();
-    final totalCategories = await getTotalCategoryCount();
-
-    // Update dataMap with real values
-    setState(() {
-      dataMap = {
-        "Products": totalProducts.toDouble(),
-        "Selled products": totalSoldProducts.toDouble(),
-        "Categories": totalCategories.toDouble(),
-      };
-    });
+    await updateCounts(); // Ensure counts are updated initially
+    _updateDataMap(); // Call this to update the chart after data loads
   }
 
   @override
@@ -75,7 +77,7 @@ class _OverviewPageState extends State<OverviewPage> {
                 ),
               ),
             ),
-            SizedBox(height: 30), // Space between pie chart and data map
+            const SizedBox(height: 30), // Space between pie chart and data map
             // Data map list view
             Expanded(
               child: ListView.builder(
@@ -96,7 +98,6 @@ class _OverviewPageState extends State<OverviewPage> {
                           fontSize: 16,
                         )),
                     trailing: Text(
-                      // ignore: unnecessary_string_interpolations
                       '${value.toStringAsFixed(1)}',
                       style: const TextStyle(
                         fontSize: 16,
@@ -110,5 +111,14 @@ class _OverviewPageState extends State<OverviewPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Remove listeners to prevent memory leaks
+    totalProductsNotifier.removeListener(_updateDataMap);
+    totalSoldProductsNotifier.removeListener(_updateDataMap);
+    totalCategoriesNotifier.removeListener(_updateDataMap);
+    super.dispose();
   }
 }
