@@ -5,7 +5,6 @@ import 'package:hive/hive.dart';
 import 'package:upsets/Screens/about.dart';
 import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
-
 import 'package:upsets/Screens/termsofuse.dart';
 import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/Screens/login_page.dart';
