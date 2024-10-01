@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:upsets/Utilities/widgets/appbars.dart';
-
+import 'package:upsets/db/functions/dbFunctions.dart';
+import 'package:upsets/db/functions/hiveModel/model.dart';
 import 'package:upsets/db/functions/hiveModel/overviewdb.dart'; // Your model classes
 
 class OverviewPage extends StatefulWidget {
   const OverviewPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _OverviewPageState createState() => _OverviewPageState();
 }
 
@@ -16,13 +16,13 @@ class _OverviewPageState extends State<OverviewPage> {
   Map<String, double> dataMap = {
     "Products": 0,
     "Selled products": 0,
-    "Categories": 0,
+    "Out of Stock": 0, // Updated to show only out-of-stock count
   };
 
   final List<Color> colorList = [
     Colors.blue,
     Colors.green,
-    Colors.orange,
+    Colors.red, // Color for out-of-stock items
   ];
 
   @override
@@ -33,15 +33,21 @@ class _OverviewPageState extends State<OverviewPage> {
     // Listen to changes in notifiers and update the chart
     totalProductsNotifier.addListener(_updateDataMap);
     totalSoldProductsNotifier.addListener(_updateDataMap);
-    totalCategoriesNotifier.addListener(_updateDataMap);
   }
 
   void _updateDataMap() {
     setState(() {
+      // Assuming you have a method to fetch the list of products
+      List<Productmodel> productList =
+          getProductList(); // Fetch product list here
+
+      final outOfStockCount = calculateOutOfStockCount(productList);
+
       dataMap = {
         "Products": totalProductsNotifier.value.toDouble(),
-        "Selled products": totalSoldProductsNotifier.value.toDouble(),
-        "Categories": totalCategoriesNotifier.value.toDouble(),
+        "Sale products": totalSoldProductsNotifier.value.toDouble(),
+        "Out of Stock":
+            outOfStockCount.toDouble(), // Show only out-of-stock count
       };
     });
   }
@@ -124,7 +130,17 @@ class _OverviewPageState extends State<OverviewPage> {
     // Remove listeners to prevent memory leaks
     totalProductsNotifier.removeListener(_updateDataMap);
     totalSoldProductsNotifier.removeListener(_updateDataMap);
-    totalCategoriesNotifier.removeListener(_updateDataMap);
     super.dispose();
+  }
+
+  // Fetch the list of products from your data source
+  List<Productmodel> getProductList() {
+    // Replace this with your actual code to retrieve the product list
+    return productListNotifier
+        .value; // Assuming you have a notifier for the product list
+  }
+
+  int calculateOutOfStockCount(List<Productmodel> productList) {
+    return productList.where((product) => product.stock! <= 0).length;
   }
 }
