@@ -4,14 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:upsets/Screens/sell_details.dart';
+import 'package:upsets/Utilities/widgets/const.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class SellProducts extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
-  const SellProducts({
-    Key? key,
-  });
+  const SellProducts({Key? key});
 
   @override
   State<SellProducts> createState() => _SellProductsState();
@@ -23,11 +21,10 @@ class _SellProductsState extends State<SellProducts> {
   final _sellchair = TextEditingController();
   final _sellPrice = TextEditingController();
   final _selldiscount = TextEditingController();
-
+  bool _isProductSelected = false;
   List<Productmodel> selectedProducts = [];
   int totalSoldCount = 0;
   late Future<List<Productmodel>> allProductsFuture;
-  late Function(double) updateTodayRevenue;
 
   @override
   void dispose() {
@@ -62,9 +59,9 @@ class _SellProductsState extends State<SellProducts> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE6B0AA),
+      backgroundColor: const Color.fromARGB(255, 222, 222, 222),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE6B0AA),
+        backgroundColor: const Color.fromARGB(255, 222, 222, 222),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
@@ -91,13 +88,15 @@ class _SellProductsState extends State<SellProducts> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                Color(0xFFE6B0AA),
-                Color.fromARGB(255, 130, 200, 122),
-              ])),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromARGB(255, 222, 222, 222),
+                Color.fromARGB(255, 222, 222, 222),
+              ],
+            ),
+          ),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
@@ -124,7 +123,7 @@ class _SellProductsState extends State<SellProducts> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 30),
+                        kheight30,
                         TextFormField(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: _sellPhone,
@@ -145,7 +144,7 @@ class _SellProductsState extends State<SellProducts> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 30),
+                        kheight30,
                         TextFormField(
                           maxLines: null,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -154,12 +153,29 @@ class _SellProductsState extends State<SellProducts> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                _navigateAndDisplaySelection(context);
-                              },
-                              icon: const Icon(Icons.arrow_drop_down),
+                            suffixIconConstraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
                             ),
+                            suffixIcon: _isProductSelected
+                                ? IconButton(
+                                    icon: const Icon(
+                                      Icons.cancel,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _sellchair.clear();
+                                        _isProductSelected = false;
+                                      });
+                                    },
+                                  )
+                                : IconButton(
+                                    onPressed: () {
+                                      _navigateAndDisplaySelection(context);
+                                    },
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                  ),
                           ),
                           readOnly: true,
                           controller: _sellchair,
@@ -170,7 +186,7 @@ class _SellProductsState extends State<SellProducts> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 30),
+                        kheight30,
                         TextFormField(
                           readOnly: true,
                           controller: _sellPrice,
@@ -187,7 +203,7 @@ class _SellProductsState extends State<SellProducts> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 30),
+                        kheight30,
                         SizedBox(
                           width: 300,
                           height: 50,
@@ -222,12 +238,13 @@ class _SellProductsState extends State<SellProducts> {
                                   });
 
                                   updateTotalSoldCount(selectedProducts.length);
-                                  // ignore: use_build_context_synchronously
+
                                   Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) => SellDetails(
-                                              selectedProducts:
-                                                  selectedProducts)));
+                                    MaterialPageRoute(
+                                      builder: (context) => SellDetails(
+                                          selectedProducts: selectedProducts),
+                                    ),
+                                  );
 
                                   setState(() {
                                     _sellName.clear();
@@ -245,14 +262,14 @@ class _SellProductsState extends State<SellProducts> {
                             child: const Text(
                               'Sell',
                               style: TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  color: Color.fromARGB(255, 255, 255, 255),
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold),
                             ),
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color.fromARGB(255, 241, 141, 141)),
-                              shape: MaterialStateProperty.all<
+                              backgroundColor: WidgetStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 95, 89, 89)),
+                              shape: WidgetStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -284,7 +301,6 @@ class _SellProductsState extends State<SellProducts> {
       final productBox = await Hive.openBox<Productmodel>('product_db');
       await productBox.put(product.id, product);
     } catch (e) {
-      // ignore: avoid_print
       print('Error updating product: $e');
     }
   }
@@ -293,7 +309,7 @@ class _SellProductsState extends State<SellProducts> {
     final result = await showDialog<List<Productmodel>>(
       context: context,
       builder: (BuildContext context) {
-        return ProductSelectionScreen();
+        return const ProductSelectionScreen();
       },
     );
 
@@ -317,16 +333,14 @@ class _SellProductsState extends State<SellProducts> {
         for (var entry in productCounts.entries) {
           String productName = entry.key;
           int count = entry.value;
-          double productPrice = double.parse(selectedProducts
-                  .firstWhere((p) => p.productname == productName)
-                  .sellingrate
-                  .toString()) *
-              count;
-
-          _sellPrice.text = totalPrice.toString();
-          _sellchair.text +=
-              '$productName (x$count) - ${productPrice.toStringAsFixed(2)}\n';
+          if (_sellchair.text.isNotEmpty) {
+            _sellchair.text += ', ';
+          }
+          _sellchair.text += '$productName($count)';
         }
+
+        _sellPrice.text = totalPrice.toString();
+        _isProductSelected = true;
       });
     }
   }
@@ -336,197 +350,170 @@ class ProductSelectionScreen extends StatefulWidget {
   const ProductSelectionScreen({super.key});
 
   @override
-  State<ProductSelectionScreen> createState() => _ProductSelectionScreenState();
+  _ProductSelectionScreenState createState() => _ProductSelectionScreenState();
 }
 
 class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
-  List<Productmodel> allProducts = [];
-  List<Productmodel> displayedProducts = [];
-  List<int> selectedCounts = [];
-  TextEditingController searchController = TextEditingController();
+  List<Productmodel> products = [];
+  List<Productmodel> filteredProducts = [];
+  Map<Productmodel, int> selectedProductCounts = {};
 
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
+    _loadProducts();
   }
 
-  Future<void> _fetchProducts() async {
+  Future<void> _loadProducts() async {
     final addProductBox = await Hive.openBox<Productmodel>('product_db');
     setState(() {
-      allProducts = addProductBox.values.toList();
-      displayedProducts = allProducts;
-      selectedCounts = List.generate(displayedProducts.length, (index) => 0);
+      products = List<Productmodel>.from(addProductBox.values);
+      filteredProducts = products;
     });
   }
 
-  void filterProducts(String query) {
-    final filteredProducts = allProducts.where((product) {
-      final productName = product.productname!.toLowerCase();
-      return productName.contains(query.toLowerCase());
-    }).toList();
-
+  void _onSearchTextChanged(String searchText) {
     setState(() {
-      displayedProducts = filteredProducts;
-      selectedCounts = List.generate(displayedProducts.length, (index) => 0);
+      filteredProducts = products.where((product) {
+        final productName = product.productname!.toLowerCase();
+        final searchLower = searchText.toLowerCase();
+        return productName.contains(searchLower);
+      }).toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: const Color(0xFFF2E8CD),
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.58,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search Product',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onChanged: filterProducts,
+            TextField(
+              onChanged: _onSearchTextChanged,
+              decoration: const InputDecoration(
+                labelText: 'Search Products',
               ),
             ),
-            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: displayedProducts.length,
+                itemCount: filteredProducts.length,
                 itemBuilder: (context, index) {
-                  Productmodel product = displayedProducts[index];
-                  return ListTile(
-                    title: GestureDetector(
-                      onTap: () {
-                        // Open count dialog only if in stock
-                        if (product.stock! > 0) {
-                          _openCountDialog(context, index);
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  final product = filteredProducts[index];
+                  final count = selectedProductCounts[product] ?? 0;
+
+                  // Provide a fallback value for null product names
+                  final productName = product.productname ?? 'Unknown Product';
+
+                  return Card(
+                    child: ListTile(
+                      title: Text(productName),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(product.productname!),
-                          if (product.stock! <= 0)
-                            const Text(
-                              'Out of Stock',
-                              style: TextStyle(color: Colors.red),
-                            ),
+                          // Check if the stock is zero and display "Out of Stock" or stock amount
+                          product.stock == 0
+                              ? const Text(
+                                  'Out of Stock',
+                                  style: TextStyle(color: Colors.red),
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Stock: ${product.stock}'),
+                                    const SizedBox(height: 4.0),
+                                    Text('Price: ₹${product.sellingrate}'),
+                                  ],
+                                ),
                         ],
                       ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(selectedCounts[index].toString()),
-                      ],
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              if (count > 0) {
+                                setState(() {
+                                  selectedProductCounts[product] = count - 1;
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.remove),
+                          ),
+                          Text(count.toString()),
+                          IconButton(
+                            onPressed: () {
+                              // Ensure the count does not exceed stock and is greater than zero
+                              if (product.stock != null &&
+                                  product.stock! > 0 &&
+                                  count < product.stock!) {
+                                setState(() {
+                                  selectedProductCounts[product] = count + 1;
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(
+                          255, 219, 42, 30), // Cancel button color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
                     onPressed: () {
-                      List<Productmodel> selectedProducts = [];
-                      for (int i = 0; i < displayedProducts.length; i++) {
-                        for (int j = 0; j < selectedCounts[i]; j++) {
-                          selectedProducts.add(displayedProducts[i]);
+                      Navigator.pop(
+                          context); // Closes the dialog without action
+                    },
+                    child: const Text('Cancel',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                SizedBox(
+                  width: 100,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(
+                          255, 0, 0, 0), // Done button color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      final selectedProducts = <Productmodel>[];
+                      selectedProductCounts.forEach((product, count) {
+                        if (count > 0) {
+                          for (int i = 0; i < count; i++) {
+                            selectedProducts.add(product);
+                          }
                         }
-                      }
+                      });
                       Navigator.pop(context, selectedProducts);
                     },
-                    child: const Text('Add'),
+                    child: const Text('Done',
+                        style: TextStyle(color: Colors.white)),
                   ),
-                  const SizedBox(width: 50),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(() {
-                        selectedCounts =
-                            List.generate(allProducts.length, (_) => 0);
-                      });
-                    },
-                    child: const Text('Clear'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  void _openCountDialog(BuildContext context, int index) {
-    int currentCount = selectedCounts[index];
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title:
-              Text('Select Count for ${displayedProducts[index].productname}'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      if (currentCount > 0) {
-                        setState(() {
-                          currentCount--;
-                          selectedCounts[index] = currentCount;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  Text(
-                    currentCount.toString(),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (displayedProducts[index].stock! > currentCount) {
-                        setState(() {
-                          currentCount++;
-                          selectedCounts[index] = currentCount;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              );
-            },
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  selectedCounts[index] = currentCount;
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

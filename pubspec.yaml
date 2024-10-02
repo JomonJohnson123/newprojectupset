@@ -74,7 +74,7 @@ flutter:
     - assets/images/profile.jpg
     - assets/images/Splash.png
     - assets/images/addimage.webp
-
+    - assets/images/WATCHbgd.webp
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
