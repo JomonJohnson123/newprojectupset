@@ -25,7 +25,7 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Add Categories",
-        backgroundColor: Color(0xFFE6B0AA),
+        backgroundColor: Color.fromARGB(255, 190, 190, 190),
         titleColor: Colors.black,
         onBackPressed: () {
           Navigator.pop(context);
@@ -41,8 +41,8 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFE6B0AA),
-              Color.fromARGB(255, 130, 200, 122),
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 112, 113, 111),
             ],
           ),
         ),

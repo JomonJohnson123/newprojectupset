@@ -292,3 +292,9 @@ class UserDataService {
     return null;
   }
 }
+
+// void getUserData() async {
+//   final Box = Hive.box<Userdatamodel>('create_account');
+//   final List<Userdatamodel> users = Box.values.toList();
+//   print(users);
+// }

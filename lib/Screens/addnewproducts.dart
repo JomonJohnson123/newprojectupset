@@ -65,8 +65,8 @@ class _AddproductState extends State<Addproduct> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFE6B0AA),
-              Color.fromARGB(255, 130, 200, 122),
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 112, 113, 111),
             ],
           ),
         ),
