@@ -125,21 +125,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 kwidth60,
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.person_2_outlined,
                             size: 25.0,
                             color: Color.fromARGB(255, 42, 39, 39),
                           ),
-                          SizedBox(width: 8.0),
+                          const SizedBox(width: 8.0),
                           Text(
-                            'Jomon',
-                            style: TextStyle(
+                            '${user?.name}',
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 48, 43, 43),
@@ -147,10 +147,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4.0),
+                      const SizedBox(height: 4.0),
                       Text(
-                        'jomon@gmail.com',
-                        style: TextStyle(
+                        '@${user?.email}',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 48, 43, 43),

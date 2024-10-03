@@ -11,6 +11,7 @@ ValueNotifier<List<Categorymodel>> categoryListNotifier = ValueNotifier([]);
 ValueNotifier<List<Productmodel>> productListNotifier = ValueNotifier([]);
 ValueNotifier<double> totalPriceNotifier = ValueNotifier<double>(0.0);
 ValueNotifier<int> productCountNotifier = ValueNotifier(0);
+ValueNotifier<List<Userdatamodel>> usermodelListNotifier = ValueNotifier([]);
 
 calculateTotalPrice({DateTime? selectedDate}) {
   double totalPrice = 0.0;
@@ -287,14 +288,16 @@ class UserDataService {
     final box = Hive.box<Userdatamodel>('create_account');
     if (box.isNotEmpty) {
       // Assuming you want the first user or modify logic accordingly
-      return box.getAt(1);
+      return box.getAt(0);
     }
     return null;
   }
 }
 
-// void getUserData() async {
-//   final Box = Hive.box<Userdatamodel>('create_account');
-//   final List<Userdatamodel> users = Box.values.toList();
-//   print(users);
-// }
+void getUserData() async {
+  // ignore: non_constant_identifier_names
+  final Box = Hive.box<Userdatamodel>('create_account');
+  final List<Userdatamodel> users = Box.values.toList();
+  userListNotifier.value = users;
+  userListNotifier.notifyListeners();
+}
