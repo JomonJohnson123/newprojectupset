@@ -32,6 +32,9 @@ class CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 249, 249, 249),
@@ -47,13 +50,13 @@ class CategoriesPageState extends State<CategoriesPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
-              width: 370,
-              height: 50,
+              width: screenWidth * 0.95, // Adjust width dynamically
+              height: screenHeight * 0.07, // Adjust height dynamically
               child: TextFormField(
                 controller: searchController,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'no result found';
+                    return 'No result found';
                   }
                   return null;
                 },
@@ -85,12 +88,15 @@ class CategoriesPageState extends State<CategoriesPage> {
                     SliverPadding(
                       padding: const EdgeInsets.all(8),
                       sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: screenWidth < 600
+                              ? 2
+                              : 3, // Adjust grid columns based on screen width
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: screenWidth < 600
+                              ? 0.75
+                              : 0.85, // Adjust aspect ratio based on screen size
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -110,8 +116,10 @@ class CategoriesPageState extends State<CategoriesPage> {
                                     children: [
                                       Image.file(
                                         File(category.imagepath),
-                                        width: 180,
-                                        height: 200,
+                                        width: screenWidth *
+                                            0.45, // Dynamic image width
+                                        height: screenHeight *
+                                            0.25, // Dynamic image height
                                         fit: BoxFit.cover,
                                       ),
                                       Positioned(
@@ -188,7 +196,10 @@ class CategoriesPageState extends State<CategoriesPage> {
                                   ),
                                   Text(
                                     category.categoryname,
-                                    style: const TextStyle(fontSize: 18),
+                                    style: TextStyle(
+                                      fontSize: screenWidth *
+                                          0.045, // Dynamic text size
+                                    ),
                                   ),
                                 ],
                               ),

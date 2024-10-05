@@ -396,70 +396,82 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: filteredProducts.length,
-                itemBuilder: (context, index) {
-                  final product = filteredProducts[index];
-                  final count = selectedProductCounts[product] ?? 0;
+              child: filteredProducts.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No products found',
+                        style: TextStyle(color: Colors.red, fontSize: 16),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = filteredProducts[index];
+                        final count = selectedProductCounts[product] ?? 0;
 
-                  // Provide a fallback value for null product names
-                  final productName = product.productname ?? 'Unknown Product';
+                        // Provide a fallback value for null product names
+                        final productName =
+                            product.productname ?? 'Unknown Product';
 
-                  return Card(
-                    child: ListTile(
-                      title: Text(productName),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Check if the stock is zero and display "Out of Stock" or stock amount
-                          product.stock == 0
-                              ? const Text(
-                                  'Out of Stock',
-                                  style: TextStyle(color: Colors.red),
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Stock: ${product.stock}'),
-                                    const SizedBox(height: 4.0),
-                                    Text('Price: ₹${product.sellingrate}'),
-                                  ],
+                        return Card(
+                          child: ListTile(
+                            title: Text(productName),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Check if the stock is zero and display "Out of Stock" or stock amount
+                                product.stock == 0
+                                    ? const Text(
+                                        'Out of Stock',
+                                        style: TextStyle(color: Colors.red),
+                                      )
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Stock: ${product.stock}'),
+                                          const SizedBox(height: 4.0),
+                                          Text(
+                                              'Price: ₹${product.sellingrate}'),
+                                        ],
+                                      ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if (count > 0) {
+                                      setState(() {
+                                        selectedProductCounts[product] =
+                                            count - 1;
+                                      });
+                                    }
+                                  },
+                                  icon: const Icon(Icons.remove),
                                 ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              if (count > 0) {
-                                setState(() {
-                                  selectedProductCounts[product] = count - 1;
-                                });
-                              }
-                            },
-                            icon: const Icon(Icons.remove),
+                                Text(count.toString()),
+                                IconButton(
+                                  onPressed: () {
+                                    // Ensure the count does not exceed stock and is greater than zero
+                                    if (product.stock != null &&
+                                        product.stock! > 0 &&
+                                        count < product.stock!) {
+                                      setState(() {
+                                        selectedProductCounts[product] =
+                                            count + 1;
+                                      });
+                                    }
+                                  },
+                                  icon: const Icon(Icons.add),
+                                ),
+                              ],
+                            ),
                           ),
-                          Text(count.toString()),
-                          IconButton(
-                            onPressed: () {
-                              // Ensure the count does not exceed stock and is greater than zero
-                              if (product.stock != null &&
-                                  product.stock! > 0 &&
-                                  count < product.stock!) {
-                                setState(() {
-                                  selectedProductCounts[product] = count + 1;
-                                });
-                              }
-                            },
-                            icon: const Icon(Icons.add),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

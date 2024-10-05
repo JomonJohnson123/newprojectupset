@@ -6,7 +6,7 @@ import 'package:upsets/Screens/about.dart';
 import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
 import 'package:upsets/Screens/termsofuse.dart';
-import 'package:upsets/Utilities/widgets/const.dart';
+
 import 'package:upsets/Screens/login_page.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
@@ -79,6 +79,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen size for responsive layout
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 161, 197, 222),
       appBar: AppBar(
@@ -89,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: const Color.fromARGB(255, 161, 197, 222),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(screenWidth * 0.04), // Responsive padding
         child: Column(
           children: [
             Row(
@@ -99,7 +103,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     GestureDetector(
                       onTap: _pickImage,
                       child: CircleAvatar(
-                        radius: 50,
+                        radius: screenWidth *
+                            0.12, // Adjust circle size based on width
                         backgroundImage: _image != null
                             ? FileImage(_image!)
                             : const AssetImage('assets/images/profile.jpg')
@@ -111,129 +116,172 @@ class _ProfilePageState extends State<ProfilePage> {
                       right: 0,
                       child: GestureDetector(
                         onTap: _pickImage,
-                        child: const CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Color.fromARGB(255, 167, 144, 144),
+                        child: CircleAvatar(
+                          radius: screenWidth * 0.04, // Adjust icon size
+                          backgroundColor:
+                              const Color.fromARGB(255, 167, 144, 144),
                           child: Icon(
                             Icons.edit,
-                            size: 20,
-                            color: Color.fromARGB(255, 13, 16, 18),
+                            size: screenWidth * 0.06, // Responsive icon size
+                            color: const Color.fromARGB(255, 13, 16, 18),
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                kwidth60,
+                SizedBox(
+                    width:
+                        screenWidth * 0.1), // Adjust width based on screen size
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person_2_outlined,
-                            size: 25.0,
-                            color: Color.fromARGB(255, 42, 39, 39),
+                            size: screenWidth * 0.06, // Responsive icon size
+                            color: const Color.fromARGB(255, 42, 39, 39),
                           ),
-                          const SizedBox(width: 8.0),
+                          SizedBox(width: screenWidth * 0.02), // Adjust spacing
                           Text(
                             '${user?.name}',
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style: TextStyle(
+                              fontSize:
+                                  screenWidth * 0.05, // Responsive text size
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 48, 43, 43),
+                              color: const Color.fromARGB(255, 6, 6, 6),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4.0),
-                      Text(
-                        '@${user?.email}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 48, 43, 43),
-                        ),
+                      SizedBox(height: screenHeight * 0.01),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.email_outlined,
+                            size: screenWidth * 0.06,
+                            color: const Color.fromARGB(255, 42, 39, 39),
+                          ),
+                          SizedBox(width: screenWidth * 0.02),
+                          Text(
+                            '${user?.email}',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.05,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 48, 43, 43),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            kheight10,
+            SizedBox(height: screenHeight * 0.02), // Responsive height
             Divider(
               color: Colors.white.withOpacity(0.5),
               thickness: 1.0,
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: screenHeight * 0.04),
             Expanded(
               child: ListView(
                 children: [
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.equalizer,
                       color: Colors.black,
+                      size: screenWidth * 0.07, // Responsive icon size
                     ),
-                    title: const Text(
+                    title: Text(
                       'Sell Product',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenWidth * 0.045, // Responsive font size
+                      ),
                     ),
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SellProducts()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SellProducts(),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.policy_outlined,
                       color: Colors.black,
+                      size: screenWidth * 0.07,
                     ),
-                    title: const Text(
+                    title: Text(
                       'Privacy Policy',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenWidth * 0.045,
+                      ),
                     ),
                     onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Privacypolicy())),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Privacypolicy(),
+                      ),
+                    ),
                   ),
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.handshake_outlined,
                       color: Colors.black,
+                      size: screenWidth * 0.07,
                     ),
-                    title: const Text(
+                    title: Text(
                       'Terms of Use',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenWidth * 0.045,
+                      ),
                     ),
                     onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const TermsOfUseScreen())),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TermsOfUseScreen(),
+                      ),
+                    ),
                   ),
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.info_outline,
                       color: Colors.black,
+                      size: screenWidth * 0.07,
                     ),
-                    title: const Text(
+                    title: Text(
                       'About Us',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenWidth * 0.045,
+                      ),
                     ),
                     onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AboutPage())),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AboutPage(),
+                      ),
+                    ),
                   ),
-                  kheight50,
+                  SizedBox(height: screenHeight * 0.1), // Adjust button height
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 215, 29, 91),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                            screenWidth * 0.3, // Responsive button padding
+                        vertical: screenHeight * 0.02,
                       ),
                     ),
                     onPressed: () async {
@@ -244,14 +292,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
+                          builder: (context) => const LoginScreen(),
+                        ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Logout',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenWidth * 0.045,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

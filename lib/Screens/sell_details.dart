@@ -257,7 +257,7 @@ class _SellDetailsState extends State<SellDetails> {
                                   ),
                                   Text(
                                     sellProduct.sellDate != null
-                                        ? DateFormat('dd/MM/yyyy \n hh:mm:ss a')
+                                        ? DateFormat('MM/dd/yyyy \n hh:mm:ss a')
                                             .format(sellProduct.sellDate!)
                                         : 'N/A',
                                     style: const TextStyle(

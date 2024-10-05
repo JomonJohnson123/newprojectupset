@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +30,16 @@ class _MyproductState extends State<Myproduct> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width to adjust layout dynamically
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Determine the number of grid columns based on screen width
+    int crossAxisCount = screenWidth < 600
+        ? 2 // For smaller screens, use 2 columns
+        : screenWidth < 900
+            ? 3 // For medium screens, use 3 columns
+            : 4; // For larger screens, use 4 columns
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,20 +62,21 @@ class _MyproductState extends State<Myproduct> {
           children: [
             Row(
               children: [
-                SizedBox(
-                  height: 50,
-                  width: 375,
-                  child: TextField(
-                    controller: searchController,
-                    decoration: const InputDecoration(
-                      labelText: 'Search by product name',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        labelText: 'Search by product name',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        // Calling a method to update the product list based on the search query
+                        updateProductList(value);
+                      },
                     ),
-                    onChanged: (value) {
-                      // Calling a method to update the product list based on the search query
-                      updateProductList(value);
-                    },
                   ),
                 ),
               ],
@@ -85,9 +94,8 @@ class _MyproductState extends State<Myproduct> {
                   return Padding(
                     padding: const EdgeInsets.all(8),
                     child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount, // Dynamic column count
                         mainAxisSpacing: 8,
                         crossAxisSpacing: 8,
                         childAspectRatio: 0.75,
@@ -221,9 +229,6 @@ class _MyproductState extends State<Myproduct> {
     final productList = productBox.values
         .where((product) => product.categoryname == categoryname)
         .toList();
-    // ignore: avoid_print
-    print(
-        'Fetched products for category: $categoryname'); // Add this line for debugging
     return productList;
   }
 
