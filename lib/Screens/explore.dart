@@ -92,7 +92,9 @@ class _ExplorePageState extends State<ExplorePage> {
         },
         badgeCount: 0,
       ),
-      body: Padding(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: Column(
           children: [
@@ -175,7 +177,7 @@ class _ExplorePageState extends State<ExplorePage> {
                               Text(
                                 'Sell Details',
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -216,7 +218,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                   child: Text(
                                     'Products $productCount',
                                     style: const TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -275,7 +277,7 @@ class _ExplorePageState extends State<ExplorePage> {
                             Text(
                               'Total Sale Price: ₹$totalPrice',
                               style: const TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
                             ),
