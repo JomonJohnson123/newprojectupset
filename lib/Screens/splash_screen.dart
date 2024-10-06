@@ -44,15 +44,17 @@ class _ScreenSplashState extends State<ScreenSplash>
         extendBody: true,
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
-        body: FadeTransition(
-          opacity: _animation,
-          child: Container(
-            width: double.maxFinite,
-            height: double.maxFinite,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/Splash.png'),
-                fit: BoxFit.cover,
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: FadeTransition(
+            opacity: _animation,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Image.asset(
+                'assets/images/Splash.png',
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
               ),
             ),
           ),

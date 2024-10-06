@@ -80,6 +80,7 @@ flutter:
     - assets/images/Splash.png
     - assets/images/addimage.webp
     - assets/images/WATCHbgd.webp
+    - assets/images/AppIcon fixed.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

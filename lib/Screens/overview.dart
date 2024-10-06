@@ -75,7 +75,7 @@ class _OverviewPageState extends State<OverviewPage> {
           children: [
             // Pie chart widget
             Card(
-              elevation: 5,
+              elevation: 10,
               color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

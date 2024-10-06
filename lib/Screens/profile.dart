@@ -168,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(
                             '${user?.email}',
                             style: TextStyle(
-                              fontSize: screenWidth * 0.05,
+                              fontSize: screenWidth * 0.04,
                               fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 48, 43, 43),
                             ),
