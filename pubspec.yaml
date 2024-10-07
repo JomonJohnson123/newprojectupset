@@ -45,12 +45,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.14.1"
-
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/images/AppIcon fixed.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -78,6 +72,8 @@ flutter:
     - assets/images/v915-wit-011-f.jpg     
     - assets/images/profile.jpg
     - assets/images/Splash.png
+    - assets/images/Splash-removebg-preview.png
+    - assets/images/Screenshot_2024-08-17_135102-removebg-preview.png
     - assets/images/addimage.webp
     - assets/images/WATCHbgd.webp
     - assets/images/AppIcon fixed.png

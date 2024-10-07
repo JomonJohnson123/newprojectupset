@@ -45,14 +45,12 @@ class _ScreenSplashState extends State<ScreenSplash>
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
           child: FadeTransition(
             opacity: _animation,
             child: FittedBox(
               fit: BoxFit.cover,
               child: Image.asset(
-                'assets/images/Splash.png',
+                'assets/images/Screenshot_2024-08-17_135102-removebg-preview.png',
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
               ),
@@ -64,7 +62,7 @@ class _ScreenSplashState extends State<ScreenSplash>
   }
 
   Future<void> checkLoginStatus() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 4));
 
     final loginBox = await Hive.openBox('loginBox');
     final isLoggedIn = loginBox.get('isLoggedIn', defaultValue: false);
