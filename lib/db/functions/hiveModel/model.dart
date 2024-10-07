@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 
 part 'model.g.dart';
@@ -38,7 +40,7 @@ class ProfileModel {
   int? id;
 
   @HiveField(1)
-  String image;
+  final Uint8List image;
 
   ProfileModel({
     this.id,

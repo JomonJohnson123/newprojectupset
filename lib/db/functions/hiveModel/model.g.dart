@@ -67,7 +67,7 @@ class ProfileModelAdapter extends TypeAdapter<ProfileModel> {
     };
     return ProfileModel(
       id: fields[0] as int?,
-      image: fields[1] as String,
+      image: fields[1] as Uint8List,
     );
   }
 

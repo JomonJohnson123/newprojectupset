@@ -1,22 +1,23 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:io' if (dart.library.html) 'dart:html' as html;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upsets/Utilities/widgets/appbars.dart';
-
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
 
 class MyAddnewcatgrs extends StatefulWidget {
-  const MyAddnewcatgrs({
-    Key? key,
-  }) : super(key: key);
+  const MyAddnewcatgrs({Key? key}) : super(key: key);
 
   @override
   State<MyAddnewcatgrs> createState() => _MyAddnewcatgrsState();
 }
 
 class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
-  File? _image;
+  Uint8List? _webImage; // For storing image bytes on the web
+  XFile? _pickedImage; // For storing picked image
   final TextEditingController _nameController = TextEditingController();
   GlobalKey<FormState> ctgryformkey = GlobalKey<FormState>();
 
@@ -25,7 +26,7 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Add Categories",
-        backgroundColor: Color.fromARGB(255, 190, 190, 190),
+        backgroundColor: const Color.fromARGB(255, 190, 190, 190),
         titleColor: Colors.black,
         onBackPressed: () {
           Navigator.pop(context);
@@ -59,23 +60,30 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
                       child: Container(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: _image != null
-                              ? Image.file(
-                                  _image!,
+                          child: _webImage != null
+                              ? Image.memory(
+                                  _webImage!,
                                   width: 300,
                                   height: 200,
                                   fit: BoxFit.cover,
                                 )
-                              : Container(
-                                  color: Colors.black,
-                                  width: 300,
-                                  height: 200,
-                                  child: const Icon(
-                                    Icons.add_photo_alternate,
-                                    color: Colors.white,
-                                    size: 50,
-                                  ),
-                                ),
+                              : _pickedImage != null
+                                  ? Image.network(
+                                      _pickedImage!.path,
+                                      width: 300,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      color: Colors.black,
+                                      width: 300,
+                                      height: 200,
+                                      child: const Icon(
+                                        Icons.add_photo_alternate,
+                                        color: Colors.white,
+                                        size: 50,
+                                      ),
+                                    ),
                         ),
                       ),
                     ),
@@ -107,14 +115,14 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
                           ElevatedButton(
                             onPressed: () {
                               if (ctgryformkey.currentState!.validate()) {
-                                if (_image == null) {
+                                if (_pickedImage == null && _webImage == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Please select an image'),
                                     ),
                                   );
                                 } else {
-                                  _savecategory();
+                                  _saveCategory();
                                   Navigator.pop(context);
                                 }
                               }
@@ -141,19 +149,26 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
     );
   }
 
-  Future<void> _savecategory() async {
+  Future<void> _saveCategory() async {
     final categoryName = _nameController.text.trim();
-    final image = _image?.path;
+    String? imagePath;
 
-    if (categoryName.isEmpty || image == null) {
+    if (categoryName.isEmpty || (_pickedImage == null && _webImage == null)) {
       return;
+    }
+
+    if (_pickedImage != null) {
+      imagePath = _pickedImage!.path;
+    } else if (_webImage != null) {
+      // For web, store image as base64 string
+      imagePath = base64Encode(_webImage!);
     }
 
     final category = Categorymodel(
       categoryname: categoryName,
-      imagepath: image,
+      imagepath: imagePath!,
     );
-    await addCategory(category); // Call the function to add a category
+    await addCategory(category);
   }
 
   Future<void> _getImage() async {
@@ -161,9 +176,18 @@ class _MyAddnewcatgrsState extends State<MyAddnewcatgrs> {
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
-      setState(() {
-        _image = File(pickedImage.path);
-      });
+      if (kIsWeb) {
+        // For web
+        final bytes = await pickedImage.readAsBytes();
+        setState(() {
+          _webImage = bytes;
+        });
+      } else {
+        // For mobile/desktop
+        setState(() {
+          _pickedImage = pickedImage;
+        });
+      }
     }
   }
 }

@@ -162,9 +162,10 @@ class CategoriesPageState extends State<CategoriesPage> {
                                                             await deletectgrs(
                                                                 category.id!);
                                                             Navigator.of(
-                                                                    context)
-                                                                .pop();
+                                                                // ignore: use_build_context_synchronously
+                                                                context).pop();
                                                           } else {
+                                                            // ignore: avoid_print
                                                             print(
                                                                 'Category ID is null');
                                                           }

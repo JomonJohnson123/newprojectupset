@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'dart:typed_data'; // For Uint8List
 import 'package:hive/hive.dart';
 import 'package:upsets/Screens/about.dart';
 import 'package:upsets/Screens/privacy_policy.dart';
 import 'package:upsets/Screens/sell_product.dart';
 import 'package:upsets/Screens/termsofuse.dart';
-
 import 'package:upsets/Screens/login_page.dart';
 import 'package:upsets/db/functions/dbFunctions.dart';
 import 'package:upsets/db/functions/hiveModel/model.dart';
@@ -20,7 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   List<Userdatamodel> userdataList = [];
-  File? _image;
+  Uint8List? _image;
   Userdatamodel? user;
   bool isLoading = true;
 
@@ -53,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final profile = box.get('user_profile');
     if (profile != null && profile.image.isNotEmpty) {
       setState(() {
-        _image = File(profile.image);
+        _image = profile.image;
       });
     }
   }
@@ -62,19 +61,18 @@ class _ProfilePageState extends State<ProfilePage> {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      final bytes = await image.readAsBytes(); // Read image as bytes
       setState(() {
-        _image = File(image.path);
+        _image = bytes;
       });
-      await saveData();
+      await saveData(bytes);
     }
   }
 
-  Future<void> saveData() async {
-    if (_image != null) {
-      final box = await Hive.openBox<ProfileModel>('profile');
-      final profile = ProfileModel(image: _image!.path);
-      await box.put('user_profile', profile);
-    }
+  Future<void> saveData(Uint8List imageData) async {
+    final box = await Hive.openBox<ProfileModel>('profile');
+    final profile = ProfileModel(image: imageData);
+    await box.put('user_profile', profile);
   }
 
   @override
@@ -106,7 +104,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         radius: screenWidth *
                             0.12, // Adjust circle size based on width
                         backgroundImage: _image != null
-                            ? FileImage(_image!)
+                            ? MemoryImage(
+                                _image!) // Use MemoryImage for Uint8List
                             : const AssetImage('assets/images/profile.jpg')
                                 as ImageProvider,
                       ),
